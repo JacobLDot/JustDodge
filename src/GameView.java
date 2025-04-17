@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,16 +19,19 @@ public class GameView extends JPanel implements KeyListener {
     private ArrayList<Projectile> lanterns = new ArrayList<>();
     private ArrayList<Projectile> fireworks = new ArrayList<>();
     private ArrayList<Projectile> shards = new ArrayList<>();
+    private ArrayList<Projectile> flowers = new ArrayList<>();
     private Image[] starSprites = new Image[4];
     private Image[] flameSprites = new Image[4];
     private Image[] lanternSprites = new Image[4];
     private Image[] fireworkSprites = new Image[4];
     private Image[] shardSprites = new Image[2];
+    private Image[] flowerSprites = new Image[4];
     private long startTime;
     private double spiralAngle = 0;
     private int flameSpawnCooldown = 0;
     private int lanternSpawnCooldown = 0;
     private int fireworkSpawnCooldown = 0;
+    private int flowerSpawnCooldown = 0;
     private int numTimesLooped = 0;
     private boolean isGameOver = false;
 
@@ -37,6 +41,9 @@ public class GameView extends JPanel implements KeyListener {
 
     private int finaleStart = 4063;
     private int finaleEnd = 5863;
+
+    private int flowerPhaseStart = 5864;
+    private int flowerPhaseEnd = 7663;
 
     public GameView(Player player) {
         this.player = player;
@@ -64,6 +71,10 @@ public class GameView extends JPanel implements KeyListener {
         fireworkSprites[3] = new ImageIcon("Resources/Projectiles/fireball_4.png").getImage();
         shardSprites[0] = new ImageIcon("Resources/Projectiles/shard_1.png").getImage();
         shardSprites[1] = new ImageIcon("Resources/Projectiles/shard_2.png").getImage();
+        flowerSprites[0] = new ImageIcon("Resources/Projectiles/flower_1.png").getImage();
+        flowerSprites[1] = new ImageIcon("Resources/Projectiles/flower_2.png").getImage();
+        flowerSprites[2] = new ImageIcon("Resources/Projectiles/flower_3.png").getImage();
+        flowerSprites[3] = new ImageIcon("Resources/Projectiles/flower_4.png").getImage();
 
         int perimeter = 8000;
         int spacing = perimeter / 80;
@@ -116,7 +127,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with lanterns
             for (Projectile lantern : lanterns) {
                 if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(20);
+                    player.takeDamage(10);
                     lantern.setHasHitPlayer(true);
                 }
             }
@@ -134,6 +145,14 @@ public class GameView extends JPanel implements KeyListener {
                 if (shard.getHitbox().intersects(playerHitbox)) {
                     player.takeDamage(1);
                     break;
+                }
+            }
+
+            // Detects collision with flowers
+            for (Projectile flower : flowers) {
+                if (!flower.isHasHitPlayer() && flower.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(10);
+                    flower.setHasHitPlayer(true);
                 }
             }
 
@@ -165,7 +184,7 @@ public class GameView extends JPanel implements KeyListener {
             // Rocket Rebound Explode Phase 3 ~30 seconds, the 313 ticks ~5 seconds for other projectiles to clear off
             if (numTimesLooped >= (wavePhaseStart + 313) && numTimesLooped < (wavePhaseEnd + 313)) {
                 fireworkSpawnCooldown++;
-                if(fireworkSpawnCooldown % 20 == 0) {
+                if (fireworkSpawnCooldown % 20 == 0) {
                     int numFireworks = 1;
                     for (int i = 0; i < numFireworks; i++) {
                         double angle = i * (360 / numFireworks);
@@ -192,12 +211,24 @@ public class GameView extends JPanel implements KeyListener {
                     lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
                 }
                 fireworkSpawnCooldown++;
-                if(fireworkSpawnCooldown % 20 == 0) {
+                if (fireworkSpawnCooldown % 20 == 0) {
                     int numFireworks = 1;
                     for (int i = 0; i < numFireworks; i++) {
                         double angle = i * (360 / numFireworks);
                         fireworks.add(new Projectile(1000, 1000, 40, 60, 10.0, 2000, 2000, fireworkSprites));
                     }
+                }
+            }
+
+            // Flower Phase ~ 30 seconds + 5 second pause
+            if (numTimesLooped >= (flowerPhaseStart + 313) && numTimesLooped < (flowerPhaseEnd + 313)) {
+                flowerSpawnCooldown++;
+                if (flowerSpawnCooldown % 5 == 0) {
+                    double randomRow = (int)(Math.random() * 20);
+                    double spawnX = randomRow * 100;
+                    double spawnY = 2000 + 10;
+                    int speed = 1 + (int)(Math.random() * 2);
+                    flowers.add(new Projectile(spawnX, spawnY, speed, 2000, 2000, flowerSprites));
                 }
             }
 

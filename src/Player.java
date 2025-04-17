@@ -9,8 +9,8 @@ public class Player {
     private String direction = "right"; // Sets default direction
     private int frame = 0;
     private int frameTick = 0;
-    private int hp = 100;
-    private final int maxHp = 100;
+    private int hp = 1000;
+    private final int maxHp = 1000;
 
     private Image[][] walkFrames;
     private Image[] idleFrames;

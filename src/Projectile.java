@@ -112,7 +112,19 @@ public class Projectile {
         this.dy = Math.sin(Math.toRadians(angle)) * speed; // Gives vertical y direction
     }
 
-    public Projectile()
+    // Floating Blossoms
+    public Projectile(double x, double y, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
+        this.isFloatingFlower = true;
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+        this.flowerSprite = flowerSprite;
+        this.targetY = -10;
+        this.dx = Math.random() * 2 - 1;
+        this.dy = -speed;
+    }
 
     public boolean isExpiredShard() {
         return shardAge > shardLifetime;
@@ -147,7 +159,10 @@ public class Projectile {
         } else if (isExpandingShard) {
             Image currentSprite = shardSprite[frameShard];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        } else if (is)
+        } else if (isFloatingFlower) {
+            Image currentSprite = flowerSprite[frameFlower];
+            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
+        }
         else { // Draw border of stars
                 int drawX = 0;
                 int drawY = 0;
@@ -220,6 +235,19 @@ public class Projectile {
             if (frameShardCounter % 10 == 0) {
                 frameShard = (frameShard + 1) % shardSprite.length;
             }
+        } else if (isFloatingFlower) {
+            x += dx;
+            y += dy;
+
+            if (y <= 0) {
+                y = mapHeight;
+                x = Math.random() * mapWidth;
+            }
+
+            frameFlowerCounter++;
+            if (frameFlowerCounter % 10 == 0) {
+                frameFlower = (frameFlower + 1) % flowerSprite.length;
+            }
         } else {
             distance += speed;
             double perimeter = 2 * mapWidth + 2 * mapHeight;
@@ -241,6 +269,8 @@ public class Projectile {
         } else if (isReboundingFirework) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else if (isExpandingShard) {
+            return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
+        } else if (isFloatingFlower) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else {
             int x = 0;
