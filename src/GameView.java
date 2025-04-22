@@ -25,7 +25,7 @@ public class GameView extends JPanel implements KeyListener {
     private Image[] flameSprites = new Image[4];
     private Image[] lanternSprites = new Image[4];
     private Image[] fireworkSprites = new Image[4];
-    private Image[] shardSprites = new Image[2];
+    private Image[] shardSprites = new Image[4];
     private Image[] flowerSprites = new Image[4];
     private Image[] flowerShurikenSprites = new Image[2];
     private long startTime;
@@ -67,16 +67,18 @@ public class GameView extends JPanel implements KeyListener {
         flameSprites[1] = new ImageIcon("Resources/Projectiles/green_flame.png").getImage();
         flameSprites[2] = new ImageIcon("Resources/Projectiles/red_flame.png").getImage();
         flameSprites[3] = new ImageIcon("Resources/Projectiles/yellow_flame.png").getImage();
-        lanternSprites[0] = new ImageIcon("Resources/Projectiles/blue_lantern.png").getImage();
-        lanternSprites[1] = new ImageIcon("Resources/Projectiles/green_lantern.png").getImage();
-        lanternSprites[2] = new ImageIcon("Resources/Projectiles/grey_lantern.png").getImage();
-        lanternSprites[3] = new ImageIcon("Resources/Projectiles/black_lantern.png").getImage();
+        lanternSprites[0] = new ImageIcon("Resources/Projectiles/lantern1.png").getImage();
+        lanternSprites[1] = new ImageIcon("Resources/Projectiles/lantern2.png").getImage();
+        lanternSprites[2] = new ImageIcon("Resources/Projectiles/lantern3.png").getImage();
+        lanternSprites[3] = new ImageIcon("Resources/Projectiles/lantern4.png").getImage();
         fireworkSprites[0] = new ImageIcon("Resources/Projectiles/fireball_1.png").getImage();
         fireworkSprites[1] = new ImageIcon("Resources/Projectiles/fireball_2.png").getImage();
         fireworkSprites[2] = new ImageIcon("Resources/Projectiles/fireball_3.png").getImage();
         fireworkSprites[3] = new ImageIcon("Resources/Projectiles/fireball_4.png").getImage();
         shardSprites[0] = new ImageIcon("Resources/Projectiles/shard_1.png").getImage();
         shardSprites[1] = new ImageIcon("Resources/Projectiles/shard_2.png").getImage();
+        shardSprites[2] = new ImageIcon("Resources/Projectiles/shard_3.png").getImage();
+        shardSprites[3] = new ImageIcon("Resources/Projectiles/shard_4.png").getImage();
         flowerSprites[0] = new ImageIcon("Resources/Projectiles/flower_1.png").getImage();
         flowerSprites[1] = new ImageIcon("Resources/Projectiles/flower_2.png").getImage();
         flowerSprites[2] = new ImageIcon("Resources/Projectiles/flower_3.png").getImage();
@@ -119,7 +121,7 @@ public class GameView extends JPanel implements KeyListener {
             Rectangle playerHitbox = player.getHitbox();
             for (Projectile star : stars) {
                 if (star.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(10);
+                    player.takeDamage(5);
                     break;
                 }
             }
@@ -135,7 +137,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with lanterns
             for (Projectile lantern : lanterns) {
                 if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(10);
+                    player.takeDamage(20);
                     lantern.setHasHitPlayer(true);
                 }
             }
@@ -158,9 +160,8 @@ public class GameView extends JPanel implements KeyListener {
 
             // Detects collision with flowers
             for (Projectile flower : flowers) {
-                if (!flower.isHasHitPlayer() && flower.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(10);
-                    flower.setHasHitPlayer(true);
+                if (flower.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(1);
                 }
             }
 
@@ -175,91 +176,55 @@ public class GameView extends JPanel implements KeyListener {
             numTimesLooped++;
 
             // Flame Spiral Phase 1 ~10 seconds
-            if (numTimesLooped < wavePhaseStart) {
+            if (numTimesLooped < 625) {
                 flameSpawnCooldown++;
-                if (flameSpawnCooldown % 10 == 0) {
+                if (flameSpawnCooldown % 5 == 0) {
                     double radius = 1250;
                     // Parametric equation of a circle to place points on the circle
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 40, 60, 25, 2000, 2000, flameSprites));
-                    spiralAngle += 180;
+                    flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
+                    spiralAngle += 0.5;
                 }
             }
 
-            // Lantern Fall + Flame Spiral Phase 2 ~20 seconds
-            if (numTimesLooped > 625 && numTimesLooped < wavePhaseStart) {
-                lanternSpawnCooldown++;
-                if (lanternSpawnCooldown % 15 == 0) {
-                    int randomRow = (int)(Math.random() * 20);
-                    double fallingX = randomRow * 100;
-                    lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
-                }
-            }
-
-            // Rocket Rebound Explode Phase 3 ~30 seconds, the 313 ticks ~5 seconds for other projectiles to clear off
-            if (numTimesLooped >= (wavePhaseStart + 313) && numTimesLooped < (wavePhaseEnd + 313)) {
-                fireworkSpawnCooldown++;
-                if (fireworkSpawnCooldown % 20 == 0) {
-                    int numFireworks = 1;
-                    for (int i = 0; i < numFireworks; i++) {
-                        double angle = i * (360 / numFireworks);
-                        fireworks.add(new Projectile(1000, 1000, 40, 60, 7.5, 2000, 2000, fireworkSprites));
-                    }
-                }
-            }
-
-            // Finale Phase ~25 seconds
-            if (numTimesLooped >= finaleStart && numTimesLooped < finaleEnd) {
+            // Flame Spiral Phase 2 ~10 seconds
+            if (numTimesLooped >= 625 && numTimesLooped < 1250) {
                 flameSpawnCooldown++;
-                if (flameSpawnCooldown % 20 == 0) {
+                if (flameSpawnCooldown % 5 == 0) {
                     double radius = 1250;
-
+                    // Parametric equation of a circle to place points on the circle
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 40, 60, 25, 2000, 2000, flameSprites));
-                    spiralAngle += 180;
+                    flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
+                    spiralAngle -= 0.5;
                 }
+            }
+
+            // Lantern Fall ~20 seconds
+            if (numTimesLooped >= 1250 && numTimesLooped < 2500) {
                 lanternSpawnCooldown++;
-                if (lanternSpawnCooldown % 30 == 0) {
+                if (lanternSpawnCooldown % 5 == 0) {
                     int randomRow = (int)(Math.random() * 20);
                     double fallingX = randomRow * 100;
                     lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
                 }
-                fireworkSpawnCooldown++;
-                if (fireworkSpawnCooldown % 40 == 0) {
-                    int numFireworks = 1;
-                    for (int i = 0; i < numFireworks; i++) {
-                        double angle = i * (360 / numFireworks);
-                        fireworks.add(new Projectile(1000, 1000, 40, 60, 7.5, 2000, 2000, fireworkSprites));
-                    }
-                }
             }
 
-            // Flower Phase ~ 30 seconds + 5 second pause
-            if (numTimesLooped >= (flowerPhaseStart + 313) && numTimesLooped < (flowerPhaseEnd + 313)) {
+            // Flower Phase ~20 seconds
+            if (numTimesLooped >= 2500) {
                 flowerSpawnCooldown++;
-                if (flowerSpawnCooldown % 15 == 0) {
+                if (flowerSpawnCooldown % 20 == 0) {
                     double randomRow = (int)(Math.random() * 20);
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
-                    int speed = 1 + (int)(Math.random() * 10);
+                    int speed = 1 + (int)(Math.random() * 5);
                     flowers.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
                 }
             }
 
-            // Flower Shuriken Phase ~ 30 seconds
-            if (numTimesLooped >= flowerShurikenStart && numTimesLooped < flowerShurikenEnd) {
-                flowerShurikenEnd++;
-                if (flowerShurikenSpawnCooldown % 5 == 0) {
-                    double randomRow = (int)(Math.random() * 20);
-                    double spawnX = randomRow * 100;
-                    double spawnY = 2000 + 10;
-                    int speed = 1 + (int)(Math.random() * 10);
-                    flowerShurikens.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                }
-            }
 
+            // Checks if player is dead
             if (player.getHp() <= 0) {
                 isGameOver = true;
                 timer.stop();
