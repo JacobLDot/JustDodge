@@ -13,6 +13,7 @@ public class Projectile {
     private Image[] fireworkSprite;
     private Image[] shardSprite;
     private Image[] flowerSprite;
+    private Image[] flowerShurikenSprite;
     private double targetX, targetY;
     private int frameFlame = 0;
     private int frameFlameCounter = 0;
@@ -113,7 +114,7 @@ public class Projectile {
     }
 
     // Floating Blossoms
-    public Projectile(double x, double y, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
+    public Projectile(double x, double y, double width, int height, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
         this.isFloatingFlower = true;
         this.x = x;
         this.y = y;
@@ -122,6 +123,8 @@ public class Projectile {
         this.mapHeight = mapHeight;
         this.flowerSprite = flowerSprite;
         this.targetY = -10;
+        this.width = (int)width;
+        this.height = height;
         this.dx = Math.random() * 2 - 1;
         this.dy = -speed;
     }

@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Player {
+    public static final int MAP_WIDTH = 2000;
+    public static final int MAP_HEIGHT = 2000;
     private int worldX, worldY;
     private final int size = 80;
     private final int speed = 7;
@@ -9,8 +11,8 @@ public class Player {
     private String direction = "right"; // Sets default direction
     private int frame = 0;
     private int frameTick = 0;
-    private int hp = 1000;
-    private final int maxHp = 1000;
+    private int hp = 100;
+    private final int maxHp = 100;
 
     private Image[][] walkFrames;
     private Image[] idleFrames;
@@ -92,8 +94,8 @@ public class Player {
 
     public void reset() {
         this.hp = 100;
-        this.worldX = 1000;
-        this.worldY = 1000;
+        this.worldX = MAP_WIDTH / 2;
+        this.worldY = (int)(MAP_HEIGHT * 0.7805);
         this.isMoving = false;
         this.frame = 0;
         this.frameTick = 0;

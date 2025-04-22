@@ -20,18 +20,21 @@ public class GameView extends JPanel implements KeyListener {
     private ArrayList<Projectile> fireworks = new ArrayList<>();
     private ArrayList<Projectile> shards = new ArrayList<>();
     private ArrayList<Projectile> flowers = new ArrayList<>();
+    private ArrayList<Projectile> flowerShurikens = new ArrayList<>();
     private Image[] starSprites = new Image[4];
     private Image[] flameSprites = new Image[4];
     private Image[] lanternSprites = new Image[4];
     private Image[] fireworkSprites = new Image[4];
     private Image[] shardSprites = new Image[2];
     private Image[] flowerSprites = new Image[4];
+    private Image[] flowerShurikenSprites = new Image[2];
     private long startTime;
     private double spiralAngle = 0;
     private int flameSpawnCooldown = 0;
     private int lanternSpawnCooldown = 0;
     private int fireworkSpawnCooldown = 0;
     private int flowerSpawnCooldown = 0;
+    private int flowerShurikenSpawnCooldown = 0;
     private int numTimesLooped = 0;
     private boolean isGameOver = false;
 
@@ -45,6 +48,9 @@ public class GameView extends JPanel implements KeyListener {
     private int flowerPhaseStart = 5864;
     private int flowerPhaseEnd = 7663;
 
+    private int flowerShurikenStart = 7663;
+    private int flowerShurikenEnd = 9000;
+
     public GameView(Player player) {
         this.player = player;
         setFocusable(true);
@@ -52,7 +58,7 @@ public class GameView extends JPanel implements KeyListener {
         addKeyListener(this);
 
         mapImage = new ImageIcon("Resources/map.png").getImage();
-        deathImage = new ImageIcon("Resources/death.png").getImage();
+        deathImage = new ImageIcon("Resources/death2.png").getImage();
         starSprites[0] = new ImageIcon("Resources/Projectiles/blue_star.png").getImage();
         starSprites[1] = new ImageIcon("Resources/Projectiles/green_star.png").getImage();
         starSprites[2] = new ImageIcon("Resources/Projectiles/red_star.png").getImage();
@@ -75,6 +81,8 @@ public class GameView extends JPanel implements KeyListener {
         flowerSprites[1] = new ImageIcon("Resources/Projectiles/flower_2.png").getImage();
         flowerSprites[2] = new ImageIcon("Resources/Projectiles/flower_3.png").getImage();
         flowerSprites[3] = new ImageIcon("Resources/Projectiles/flower_4.png").getImage();
+        flowerShurikenSprites[0] = new ImageIcon("Resources/Projectiles/flowershuriken_1").getImage();
+        flowerShurikenSprites[1] = new ImageIcon("Resources/Projectiles/flowershuriken_2").getImage();
 
         int perimeter = 8000;
         int spacing = perimeter / 80;
@@ -156,6 +164,14 @@ public class GameView extends JPanel implements KeyListener {
                 }
             }
 
+            // Detects collision with flower shurikens
+            for (Projectile flowerShuriken : flowerShurikens) {
+                if (!flowerShuriken.isHasHitPlayer() && flowerShuriken.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(10);
+                    flowerShuriken.setHasHitPlayer(true);
+                }
+            }
+
             numTimesLooped++;
 
             // Flame Spiral Phase 1 ~10 seconds
@@ -188,7 +204,7 @@ public class GameView extends JPanel implements KeyListener {
                     int numFireworks = 1;
                     for (int i = 0; i < numFireworks; i++) {
                         double angle = i * (360 / numFireworks);
-                        fireworks.add(new Projectile(1000, 1000, 40, 60, 10.0, 2000, 2000, fireworkSprites));
+                        fireworks.add(new Projectile(1000, 1000, 40, 60, 7.5, 2000, 2000, fireworkSprites));
                     }
                 }
             }
@@ -196,7 +212,7 @@ public class GameView extends JPanel implements KeyListener {
             // Finale Phase ~25 seconds
             if (numTimesLooped >= finaleStart && numTimesLooped < finaleEnd) {
                 flameSpawnCooldown++;
-                if (flameSpawnCooldown % 10 == 0) {
+                if (flameSpawnCooldown % 20 == 0) {
                     double radius = 1250;
 
                     double x = 1000 + radius * Math.cos(spiralAngle);
@@ -205,17 +221,17 @@ public class GameView extends JPanel implements KeyListener {
                     spiralAngle += 180;
                 }
                 lanternSpawnCooldown++;
-                if (lanternSpawnCooldown % 15 == 0) {
+                if (lanternSpawnCooldown % 30 == 0) {
                     int randomRow = (int)(Math.random() * 20);
                     double fallingX = randomRow * 100;
                     lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
                 }
                 fireworkSpawnCooldown++;
-                if (fireworkSpawnCooldown % 20 == 0) {
+                if (fireworkSpawnCooldown % 40 == 0) {
                     int numFireworks = 1;
                     for (int i = 0; i < numFireworks; i++) {
                         double angle = i * (360 / numFireworks);
-                        fireworks.add(new Projectile(1000, 1000, 40, 60, 10.0, 2000, 2000, fireworkSprites));
+                        fireworks.add(new Projectile(1000, 1000, 40, 60, 7.5, 2000, 2000, fireworkSprites));
                     }
                 }
             }
@@ -223,12 +239,24 @@ public class GameView extends JPanel implements KeyListener {
             // Flower Phase ~ 30 seconds + 5 second pause
             if (numTimesLooped >= (flowerPhaseStart + 313) && numTimesLooped < (flowerPhaseEnd + 313)) {
                 flowerSpawnCooldown++;
-                if (flowerSpawnCooldown % 5 == 0) {
+                if (flowerSpawnCooldown % 15 == 0) {
                     double randomRow = (int)(Math.random() * 20);
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
-                    int speed = 1 + (int)(Math.random() * 2);
-                    flowers.add(new Projectile(spawnX, spawnY, speed, 2000, 2000, flowerSprites));
+                    int speed = 1 + (int)(Math.random() * 10);
+                    flowers.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                }
+            }
+
+            // Flower Shuriken Phase ~ 30 seconds
+            if (numTimesLooped >= flowerShurikenStart && numTimesLooped < flowerShurikenEnd) {
+                flowerShurikenEnd++;
+                if (flowerShurikenSpawnCooldown % 5 == 0) {
+                    double randomRow = (int)(Math.random() * 20);
+                    double spawnX = randomRow * 100;
+                    double spawnY = 2000 + 10;
+                    int speed = 1 + (int)(Math.random() * 10);
+                    flowerShurikens.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
                 }
             }
 
@@ -256,7 +284,7 @@ public class GameView extends JPanel implements KeyListener {
         Graphics2D g2d = (Graphics2D) g;
 
         if (isGameOver) {
-            g2d.drawImage(deathImage, 0, 0, 2000, 2000, null);
+            g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
             return;
         }
 
@@ -336,6 +364,11 @@ public class GameView extends JPanel implements KeyListener {
             }
         }
 
+        for (Projectile flower : flowers) {
+            flower.draw(g2d);
+            flower.update();
+        }
+
         g2d.setTransform(oldTransform);
     }
     @Override
@@ -357,10 +390,12 @@ public class GameView extends JPanel implements KeyListener {
         lanterns.clear();
         fireworks.clear();
         shards.clear();
+        flowers.clear();
         spiralAngle = 0;
         flameSpawnCooldown = 0;
         lanternSpawnCooldown = 0;
         fireworkSpawnCooldown = 0;
+        flowerSpawnCooldown = 0;
         numTimesLooped = 0;
         isGameOver = false;
 
