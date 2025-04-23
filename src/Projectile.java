@@ -12,8 +12,6 @@ public class Projectile {
     private Image[] lanternSprite;
     private Image[] fireworkSprite;
     private Image[] shardSprite;
-    private Image[] flowerSprite;
-    private Image[] flowerShurikenSprite;
     private double targetX, targetY;
     private int frameFlame = 0;
     private int frameFlameCounter = 0;
@@ -23,14 +21,14 @@ public class Projectile {
     private int frameFireworkCounter = 0;
     private int frameShard = 0;
     private int frameShardCounter = 0;
-    private int frameFlower = 0;
-    private int frameFlowerCounter = 0;
+    private int framefloatingLantern = 0;
+    private int frameFloatingLanternCounter = 0;
     private int bounceCount = 0;
     private boolean isRotatingFlame = false;
     private boolean isFallingLantern = false;
     private boolean isReboundingFirework = false;
     private boolean isExpandingShard = false;
-    private boolean isFloatingFlower = false;
+    private boolean isFloatingLantern = false;
     public boolean hasHitPlayer = false;
     private boolean explode = false;
     private int shardAge = 0;
@@ -114,14 +112,14 @@ public class Projectile {
     }
 
     // Floating Blossoms
-    public Projectile(double x, double y, double width, int height, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
-        this.isFloatingFlower = true;
+    public Projectile(double x, double y, double width, int height, int speed, int mapWidth, int mapHeight, Image[] floatingLanternSprite) {
+        this.isFloatingLantern = true;
         this.x = x;
         this.y = y;
         this.speed = speed;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
-        this.flowerSprite = flowerSprite;
+        this.lanternSprite = floatingLanternSprite;
         this.targetY = -10;
         this.width = (int)width;
         this.height = height;
@@ -162,8 +160,8 @@ public class Projectile {
         } else if (isExpandingShard) {
             Image currentSprite = shardSprite[frameShard];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        } else if (isFloatingFlower) {
-            Image currentSprite = flowerSprite[frameFlower];
+        } else if (isFloatingLantern) {
+            Image currentSprite = lanternSprite[framefloatingLantern];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
         }
         else { // Draw border of stars
@@ -238,7 +236,7 @@ public class Projectile {
             if (frameShardCounter % 10 == 0) {
                 frameShard = (frameShard + 1) % shardSprite.length;
             }
-        } else if (isFloatingFlower) {
+        } else if (isFloatingLantern) {
             x += dx;
             y += dy;
 
@@ -247,9 +245,9 @@ public class Projectile {
                 x = Math.random() * mapWidth;
             }
 
-            frameFlowerCounter++;
-            if (frameFlowerCounter % 10 == 0) {
-                frameFlower = (frameFlower + 1) % flowerSprite.length;
+            frameFloatingLanternCounter++;
+            if (frameFloatingLanternCounter % 10 == 0) {
+                framefloatingLantern = (framefloatingLantern + 1) % lanternSprite.length;
             }
         } else {
             distance += speed;
@@ -273,7 +271,7 @@ public class Projectile {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else if (isExpandingShard) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
-        } else if (isFloatingFlower) {
+        } else if (isFloatingLantern) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else {
             int x = 0;

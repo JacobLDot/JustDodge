@@ -2,31 +2,41 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Player {
+    // Map size
     public static final int MAP_WIDTH = 2000;
     public static final int MAP_HEIGHT = 2000;
+
+    // Player location
     private int worldX, worldY;
+
+    // Player stats
     private final int size = 80;
     private final int speed = 7;
-    private boolean isMoving = false;
-    private String direction = "right"; // Sets default direction
-    private int frame = 0;
-    private int frameTick = 0;
     private int hp = 100;
     private final int maxHp = 100;
 
+    // Sprite settings
+    private int frame = 0;
+    private int frameTick = 0;
+    private boolean isMoving = false;
+    private String direction = "right"; // Sets default direction
     private Image[][] walkFrames;
     private Image[] idleFrames;
 
-
+    // Player constructor
     public Player(int x, int y) {
         this.worldX = x;
         this.worldY = y;
         loadSprites();
     }
 
+    // Loads the player sprites
     public void loadSprites() {
-        walkFrames = new Image[4][2]; // 4 directions, 2 frames each
-        idleFrames = new Image[4]; // 4 directions
+        // 4 directions, 2 frames each
+        walkFrames = new Image[4][2];
+
+        // 4 directions
+        idleFrames = new Image[4];
 
         walkFrames[0][0] = new ImageIcon("Resources/Sprites/down_1.png").getImage();
         walkFrames[0][1] = new ImageIcon("Resources/Sprites/down_2.png").getImage();
@@ -43,31 +53,40 @@ public class Player {
         idleFrames[3] = new ImageIcon("Resources/Sprites/idle_right.png").getImage();
     }
 
+    // Moves player up
     public void moveUp() {
         worldY += speed;
         direction = "up";
         isMoving = true;
     }
+
+    // Moves player down
     public void moveDown() {
         worldY -= speed;
         direction = "down";
         isMoving = true;
     }
+
+    // Moves player left
     public void moveLeft() {
         worldX -= speed;
         direction = "left";
         isMoving = true;
     }
+
+    // Moves player right
     public void moveRight() {
         worldX += speed;
         direction = "right";
         isMoving = true;
     }
 
+    // Stops moving player
     public void stopMoving() {
         isMoving = false;
     }
 
+    // Updates player sprites when moving
     public void updateAnimation() {
         if (isMoving) {
             frameTick++;
@@ -82,16 +101,39 @@ public class Player {
         }
     }
 
-    public int getWorldX() { return worldX; }
-    public int getWorldY() { return worldY; }
+    // Returns player X location
+    public int getWorldX() {
+        return worldX;
+    }
 
-    public int getHp() { return hp; }
-    public int getMaxHp() { return maxHp; }
+    // Returns player Y location
+    public int getWorldY() {
+        return worldY;
+    }
 
+    // Returns player hp
+    public int getHp() {
+        return hp;
+    }
+
+    // Returns player maxHp
+    public int getMaxHp() {
+        return maxHp;
+    }
+
+    // Removes hp when player is damaged
     public void takeDamage(int amount) {
         hp = Math.max(0, hp - amount);
     }
 
+    // Regenerate player hp
+    public void regenerateHp(int amount) {
+        if (hp < maxHp) {
+            hp = Math.min(maxHp, hp + amount);
+        }
+    }
+
+    // Resets to start when game is reset
     public void reset() {
         this.hp = 100;
         this.worldX = MAP_WIDTH / 2;
@@ -101,10 +143,12 @@ public class Player {
         this.frameTick = 0;
     }
 
+    // Creates rectangle player hitbox
     public Rectangle getHitbox() {
         return new Rectangle(worldX - size / 2, worldY - size / 2, size, size);
     }
 
+    // Draws player frames
     public void draw(Graphics g) {
         int directionIndex = switch (direction) { // Check direction player is moving
             case "up" -> 0;
@@ -121,16 +165,21 @@ public class Player {
             sprite = idleFrames[directionIndex];
         }
 
+        // Creates HP bar and sets location
         int barWidth = 80;
         int barHeight = 8;
         int barX = worldX - barWidth / 2;
-        int barY = worldY + size / 2 + 10; // Following right below the character
 
-        g.setColor(Color.white); // Sets outline of hp bar to dark grey
+        // Following right below the character
+        int barY = worldY + size / 2 + 10;
+
+        // Sets outline of hp bar to dark grey
+        g.setColor(Color.white);
         g.fillRect(barX, barY, barWidth, barHeight);
 
         float hpPercent = (float) hp / maxHp;
-        Color healthColor = new Color(1.0f - hpPercent, hpPercent, 0.0f); // Red to green; dynamic hp colors
+        // Red to green; dynamic hp colors
+        Color healthColor = new Color(1.0f - hpPercent, hpPercent, 0.0f);
         g.setColor(healthColor);
         g.fillRect(barX, barY, (int)(barWidth * hpPercent), barHeight);
 
