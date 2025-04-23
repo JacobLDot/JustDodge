@@ -11,6 +11,7 @@ public class GameView extends JPanel implements KeyListener {
     private Set<Integer> keysPressed = new HashSet<>();
     private Timer timer;
     private Image mapImage;
+    private Image menuImage;
     private Image deathImage;
     private static final double ZOOM = 0.60;
     private ArrayList<Projectile> flames = new ArrayList<>();
@@ -34,6 +35,8 @@ public class GameView extends JPanel implements KeyListener {
     private int regenCounter = 0;
     private int perimeter = 8000;
     private boolean isGameOver = false;
+    private boolean isPlayingGame = false;
+    private boolean isInMenu = false;
 
     // Phase repetitions in cycles ~16ms per tick
 
@@ -43,160 +46,167 @@ public class GameView extends JPanel implements KeyListener {
         requestFocusInWindow();
         addKeyListener(this);
         initializeImages();
+        isInMenu = true;
+        if (isInMenu) {
 
-        int spacing = perimeter / 80;
-
-        for (int i = 0; i < 80; i++) { // Create 80 bordering projectiles
-            int start = i * spacing;
-            stars.add(new Projectile(start, 2, 2000, 2000, starSprites[i % 4]));
         }
 
-        timer = new Timer(16, e -> {
-            regenCounter++;
-            if (regenCounter >= 100) {
-                player.regenerateHp(5);
-                regenCounter = 0;
-            }
-            boolean moving = false;
-            if (keysPressed.contains(KeyEvent.VK_W)) { // Up
-                player.moveDown();
-                moving = true;
-            }
-            if (keysPressed.contains(KeyEvent.VK_S)) { // Down
-                player.moveUp();
-                moving = true;
-            }
-            if (keysPressed.contains(KeyEvent.VK_A)) { // Left
-                player.moveLeft();
-                moving = true;
-            }
-            if (keysPressed.contains(KeyEvent.VK_D)) { // Right
-                player.moveRight();
-                moving = true;
+        if (isPlayingGame) {
+            int spacing = perimeter / 80;
+
+            for (int i = 0; i < 80; i++) { // Create 80 bordering projectiles
+                int start = i * spacing;
+                stars.add(new Projectile(start, 2, 2000, 2000, starSprites[i % 4]));
             }
 
-            if (!moving) player.stopMoving(); // If not moving stop the animation
-
-            player.updateAnimation(); // Updates the player frame
-
-            // Detect collision with the stars
-            Rectangle playerHitbox = player.getHitbox();
-            for (Projectile star : stars) {
-                if (star.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(5);
-                    break;
+            timer = new Timer(16, e -> {
+                regenCounter++;
+                if (regenCounter >= 100) {
+                    player.regenerateHp(5);
+                    regenCounter = 0;
                 }
-            }
-
-            // Detects collision with flames
-            for (Projectile flame : flames) {
-                if (!flame.isHasHitPlayer() && flame.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(5);
-                    flame.setHasHitPlayer(true);
+                boolean moving = false;
+                if (keysPressed.contains(KeyEvent.VK_W)) { // Up
+                    player.moveDown();
+                    moving = true;
                 }
-            }
-
-            // Detects collision with lanterns
-            for (Projectile lantern : lanterns) {
-                if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(20);
-                    lantern.setHasHitPlayer(true);
+                if (keysPressed.contains(KeyEvent.VK_S)) { // Down
+                    player.moveUp();
+                    moving = true;
                 }
-            }
-
-            // Detects collision with fireworks
-            for (Projectile firework : fireworks) {
-                if (!firework.isHasHitPlayer() && firework.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(5);
-                    firework.setHasHitPlayer(true);
+                if (keysPressed.contains(KeyEvent.VK_A)) { // Left
+                    player.moveLeft();
+                    moving = true;
                 }
-            }
-
-            // Detects collision with shards
-            for (Projectile shard : shards) {
-                if (shard.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(1);
-                    break;
+                if (keysPressed.contains(KeyEvent.VK_D)) { // Right
+                    player.moveRight();
+                    moving = true;
                 }
-            }
 
-            // Detects collision with floating lanterns
-            for (Projectile floatingLantern : floatingLanterns) {
-                if (!floatingLantern.isHasHitPlayer() && floatingLantern.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(20);
-                    floatingLantern.setHasHitPlayer(true);
+                if (!moving) player.stopMoving(); // If not moving stop the animation
+
+                player.updateAnimation(); // Updates the player frame
+
+                // Detect collision with the stars
+                Rectangle playerHitbox = player.getHitbox();
+                for (Projectile star : stars) {
+                    if (star.getHitbox().intersects(playerHitbox)) {
+                        player.takeDamage(5);
+                        break;
+                    }
                 }
-            }
 
-            numTimesLooped++;
-
-            // Flame Spiral Phase 1 ~10 seconds
-            if (numTimesLooped < 625) {
-                // Increase cooldown
-                flameSpawnCooldown++;
-                if (flameSpawnCooldown % 5 == 0) {
-                    double radius = 1250;
-                    // Parametric equation of a circle to place points on the circle
-                    double x = 1000 + radius * Math.cos(spiralAngle);
-                    double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
-                    spiralAngle += 0.5;
+                // Detects collision with flames
+                for (Projectile flame : flames) {
+                    if (!flame.isHasHitPlayer() && flame.getHitbox().intersects(playerHitbox)) {
+                        player.takeDamage(5);
+                        flame.setHasHitPlayer(true);
+                    }
                 }
-            }
 
-            // Flame Spiral Phase 2 ~10 seconds
-            if (numTimesLooped >= 625 && numTimesLooped < 1250) {
-                // Increase cooldown
-                flameSpawnCooldown++;
-                if (flameSpawnCooldown % 5 == 0) {
-                    double radius = 1250;
-                    // Parametric equation of a circle to place points on the circle
-                    double x = 1000 + radius * Math.cos(spiralAngle);
-                    double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
-                    spiralAngle -= 0.5;
+                // Detects collision with lanterns
+                for (Projectile lantern : lanterns) {
+                    if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
+                        player.takeDamage(20);
+                        lantern.setHasHitPlayer(true);
+                    }
                 }
-            }
 
-            // Lantern Fall Phase 1 ~20 seconds
-            if (numTimesLooped >= 1250 && numTimesLooped < 2500) {
-                // Increase cooldown
-                lanternSpawnCooldown++;
-                if (lanternSpawnCooldown % 5 == 0) {
-                    int randomRow = (int)(Math.random() * 20);
-                    double fallingX = randomRow * 100;
-                    lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
+                // Detects collision with fireworks
+                for (Projectile firework : fireworks) {
+                    if (!firework.isHasHitPlayer() && firework.getHitbox().intersects(playerHitbox)) {
+                        player.takeDamage(5);
+                        firework.setHasHitPlayer(true);
+                    }
                 }
-            }
 
-            // Lantern Rise Phase 2 ~20 seconds - Linear increase in lantern spawns through recycling
-            if (numTimesLooped >= 2500) {
-                // Increase cooldown
-                floatingLanternSpawnCooldown++;
-                if (floatingLanternSpawnCooldown % 25 == 0) {
-                    double randomRow = (int)(Math.random() * 20);
-                    double spawnX = randomRow * 100;
-                    double spawnY = 2000 + 10;
-                    int speed = 1 + (int)(Math.random() * 5);
-                    floatingLanterns.add(new Projectile(spawnX, spawnY, 40.0, 60, speed, 2000, 2000, lanternSprites));
+                // Detects collision with shards
+                for (Projectile shard : shards) {
+                    if (shard.getHitbox().intersects(playerHitbox)) {
+                        player.takeDamage(1);
+                        break;
+                    }
                 }
-            }
+
+                // Detects collision with floating lanterns
+                for (Projectile floatingLantern : floatingLanterns) {
+                    if (!floatingLantern.isHasHitPlayer() && floatingLantern.getHitbox().intersects(playerHitbox)) {
+                        player.takeDamage(20);
+                        floatingLantern.setHasHitPlayer(true);
+                    }
+                }
+
+                numTimesLooped++;
+
+                // Flame Spiral Phase 1 ~10 seconds
+                if (numTimesLooped < 625) {
+                    // Increase cooldown
+                    flameSpawnCooldown++;
+                    if (flameSpawnCooldown % 5 == 0) {
+                        double radius = 1250;
+                        // Parametric equation of a circle to place points on the circle
+                        double x = 1000 + radius * Math.cos(spiralAngle);
+                        double y = 1000 + radius * Math.sin(spiralAngle);
+                        flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
+                        spiralAngle += 0.5;
+                    }
+                }
+
+                // Flame Spiral Phase 2 ~10 seconds
+                if (numTimesLooped >= 625 && numTimesLooped < 1250) {
+                    // Increase cooldown
+                    flameSpawnCooldown++;
+                    if (flameSpawnCooldown % 5 == 0) {
+                        double radius = 1250;
+                        // Parametric equation of a circle to place points on the circle
+                        double x = 1000 + radius * Math.cos(spiralAngle);
+                        double y = 1000 + radius * Math.sin(spiralAngle);
+                        flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
+                        spiralAngle -= 0.5;
+                    }
+                }
+
+                // Lantern Fall Phase 1 ~20 seconds
+                if (numTimesLooped >= 1250 && numTimesLooped < 2500) {
+                    // Increase cooldown
+                    lanternSpawnCooldown++;
+                    if (lanternSpawnCooldown % 5 == 0) {
+                        int randomRow = (int) (Math.random() * 20);
+                        double fallingX = randomRow * 100;
+                        lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
+                    }
+                }
+
+                // Lantern Rise Phase 2 ~20 seconds
+                if (numTimesLooped >= 2500 && numTimesLooped < 3750) {
+                    // Increase cooldown
+                    floatingLanternSpawnCooldown++;
+                    if (floatingLanternSpawnCooldown % 25 == 0) {
+                        double randomRow = (int) (Math.random() * 20);
+                        double spawnX = randomRow * 100;
+                        double spawnY = 2000 + 10;
+                        int speed = 1 + (int) (Math.random() * 5);
+                        floatingLanterns.add(new Projectile(spawnX, spawnY, 40.0, 60, speed, 2000, 2000, lanternSprites));
+                    }
+                }
 
 
-            // Checks if player is dead
-            if (player.getHp() <= 0) {
-                isGameOver = true;
-                timer.stop();
-            }
+                // Checks if player is dead
+                if (player.getHp() <= 0) {
+                    isGameOver = true;
+                    timer.stop();
+                }
 
-            repaint(); // Redraws screen
-        });
-        timer.start();
-        startTime = System.currentTimeMillis();
+                repaint(); // Redraws screen
+            });
+            timer.start();
+            startTime = System.currentTimeMillis();
+        }
     }
 
     public void initializeImages() {
         mapImage = new ImageIcon("Resources/map.png").getImage();
+        menuImage = new ImageIcon("Resources/menu.png").getImage();
         deathImage = new ImageIcon("Resources/death.png").getImage();
         starSprites[0] = new ImageIcon("Resources/Projectiles/blue_star.png").getImage();
         starSprites[1] = new ImageIcon("Resources/Projectiles/green_star.png").getImage();
@@ -237,9 +247,9 @@ public class GameView extends JPanel implements KeyListener {
             return;
         }
 
-        // Fill background black
-        g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+        if (isInMenu) {
+            g2d.drawImage(menuImage, 0, 0, this);
+        }
 
         // Save original transform
         var oldTransform = g2d.getTransform();
@@ -248,77 +258,99 @@ public class GameView extends JPanel implements KeyListener {
         g2d.scale(ZOOM, ZOOM);
         g2d.translate(-offsetX, -offsetY);
 
-        // Draw map and player
-        g.drawImage(mapImage, 0, 0, this);
+        if (isPlayingGame) {
+            // Fill background black
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        player.draw(g2d);
+            // Draw map and player
+            g.drawImage(mapImage, 0, 0, this);
 
-        for (Projectile star : stars) {
-            star.draw(g2d); // Draws the star
-            star.update(); // Updates movement/location
-        }
+            player.draw(g2d);
 
-        for (Projectile flame : flames) {
-            flame.draw(g2d);
-            flame.update();
-        }
-
-        // Remove the lanterns once they hit the end of the map.
-        Iterator<Projectile> lanternIterator = lanterns.iterator();
-        while (lanternIterator.hasNext()) { // Repeats until no more lanterns
-            Projectile lantern = lanternIterator.next();
-            lantern.draw(g2d);
-            lantern.update();
-
-            // Removes lantern if past the bottom border
-            if (lantern.getY() > 2000) {
-                lanternIterator.remove();
+            for (Projectile star : stars) {
+                star.draw(g2d); // Draws the star
+                star.update(); // Updates movement/location
             }
-        }
 
-        Iterator<Projectile> fireworkIterator = fireworks.iterator();
-        while (fireworkIterator.hasNext()) { // Repeats until no more fireworks/shards
-            Projectile firework = fireworkIterator.next();
-            firework.update();
+            // Remove the flame once it reaches the center of the map
+            Iterator<Projectile> flameIterator = flames.iterator();
+            while (flameIterator.hasNext()) { // Repeats until no more lanterns
+                Projectile flame = flameIterator.next();
+                flame.draw(g2d);
+                flame.update();
 
-            // If the firework bounced 3 times, explode it
-            if (firework.shouldExplode()) {
-                int numShards = 360;
-                double shardSpeed = 5;
-                int shardLifetime = 100;
-
-                for (int i = 0; i < numShards; i++) {
-                    double angle = Math.toRadians(i * (360.0 / numShards));
-                    double dx = shardSpeed * Math.cos(angle);
-                    double dy = shardSpeed * Math.sin(angle);
-                    shards.add(new Projectile(firework.getX(), firework.getY(), dx, dy, 3, 2000, 2000, shardSprites, shardLifetime));
+                // Removes lantern if in the middle
+                int tolerance = 5;
+                if (Math.abs(flame.getX() - 1000) < tolerance && Math.abs(flame.getY() - 1000) < tolerance) {
+                    flameIterator.remove();
                 }
             }
-            firework.draw(g2d);
 
-            if (firework.getBounceCount() >= 3) {
-                fireworkIterator.remove();
+            // Remove the lanterns once they hit the end of the map.
+            Iterator<Projectile> lanternIterator = lanterns.iterator();
+            while (lanternIterator.hasNext()) { // Repeats until no more lanterns
+                Projectile lantern = lanternIterator.next();
+                lantern.draw(g2d);
+                lantern.update();
+
+                // Removes lantern if past the bottom border
+                if (lantern.getY() >= 2000) {
+                    lanternIterator.remove();
+                }
             }
-        }
 
-        // Removes shards after a period of time
-        Iterator<Projectile> shardIterator = shards.iterator();
-        while (shardIterator.hasNext()) { // Repeats until no more shards
-            Projectile shard = shardIterator.next();
-            shard.draw(g2d);
-            shard.update();
+            // Remove the floating lanterns once they hit the top of the map.
+            Iterator<Projectile> floatingLanternIterator = floatingLanterns.iterator();
+            while (floatingLanternIterator.hasNext()) { // Repeats until no more lanterns
+                Projectile floatingLantern = floatingLanternIterator.next();
+                floatingLantern.draw(g2d);
+                floatingLantern.update();
 
-            if (shard.isExpiredShard()) {
-                shardIterator.remove();
+                // Removes lantern if past the top border
+                if (floatingLantern.getY() < 0) {
+                    floatingLanternIterator.remove();
+                }
             }
-        }
 
-        for (Projectile floatingLantern : floatingLanterns) {
-            floatingLantern.draw(g2d);
-            floatingLantern.update();
-        }
+            Iterator<Projectile> fireworkIterator = fireworks.iterator();
+            while (fireworkIterator.hasNext()) { // Repeats until no more fireworks/shards
+                Projectile firework = fireworkIterator.next();
+                firework.update();
 
-        g2d.setTransform(oldTransform);
+                // If the firework bounced 3 times, explode it
+                if (firework.shouldExplode()) {
+                    int numShards = 360;
+                    double shardSpeed = 5;
+                    int shardLifetime = 100;
+
+                    for (int i = 0; i < numShards; i++) {
+                        double angle = Math.toRadians(i * (360.0 / numShards));
+                        double dx = shardSpeed * Math.cos(angle);
+                        double dy = shardSpeed * Math.sin(angle);
+                        shards.add(new Projectile(firework.getX(), firework.getY(), dx, dy, 3, 2000, 2000, shardSprites, shardLifetime));
+                    }
+                }
+                firework.draw(g2d);
+
+                if (firework.getBounceCount() >= 3) {
+                    fireworkIterator.remove();
+                }
+            }
+
+            // Removes shards after a period of time
+            Iterator<Projectile> shardIterator = shards.iterator();
+            while (shardIterator.hasNext()) { // Repeats until no more shards
+                Projectile shard = shardIterator.next();
+                shard.draw(g2d);
+                shard.update();
+
+                if (shard.isExpiredShard()) {
+                    shardIterator.remove();
+                }
+            }
+            g2d.setTransform(oldTransform);
+        }
     }
     @Override
     public void keyTyped(KeyEvent e) {}

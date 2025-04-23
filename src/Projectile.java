@@ -153,7 +153,7 @@ public class Projectile {
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - width / 2, null);
         } else if (isFallingLantern) {
             Image currentSprite = lanternSprite[frameLantern];
-            g.drawImage(currentSprite, (int)x, (int)y - height / 2, null);
+            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
         } else if (isReboundingFirework) {
             Image currentSprite = fireworkSprite[frameFirework];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
