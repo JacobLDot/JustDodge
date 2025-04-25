@@ -12,6 +12,7 @@ public class Projectile {
     private Image[] lanternSprite;
     private Image[] fireworkSprite;
     private Image[] shardSprite;
+    private Image[] flowerSprite;
     private double targetX, targetY;
     private int frameFlame = 0;
     private int frameFlameCounter = 0;
@@ -23,12 +24,15 @@ public class Projectile {
     private int frameShardCounter = 0;
     private int framefloatingLantern = 0;
     private int frameFloatingLanternCounter = 0;
+    private int frameFlower = 0;
+    private int frameFlowerCounter = 0;
     private int bounceCount = 0;
     private boolean isRotatingFlame = false;
     private boolean isFallingLantern = false;
     private boolean isReboundingFirework = false;
     private boolean isExpandingShard = false;
     private boolean isFloatingLantern = false;
+    private boolean isFlower = false;
     public boolean hasHitPlayer = false;
     private boolean explode = false;
     private int shardAge = 0;
@@ -111,7 +115,7 @@ public class Projectile {
         this.dy = Math.sin(Math.toRadians(angle)) * speed; // Gives vertical y direction
     }
 
-    // Floating Blossoms
+    // Floating Lanterns
     public Projectile(double x, double y, double width, int height, int speed, int mapWidth, int mapHeight, Image[] floatingLanternSprite) {
         this.isFloatingLantern = true;
         this.x = x;
@@ -121,6 +125,23 @@ public class Projectile {
         this.mapHeight = mapHeight;
         this.lanternSprite = floatingLanternSprite;
         this.targetY = -10;
+        this.width = (int)width;
+        this.height = height;
+        this.dx = Math.random() * 2 - 1;
+        this.dy = -speed;
+    }
+
+    // Flowers
+    public Projectile(double x, double y, double targetX, double targetY, double width, int height, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
+        this.isFlower = true;
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+        this.flowerSprite = flowerSprite;
+        this.targetX = targetX;
+        this.targetY = targetY;
         this.width = (int)width;
         this.height = height;
         this.dx = Math.random() * 2 - 1;
@@ -163,8 +184,10 @@ public class Projectile {
         } else if (isFloatingLantern) {
             Image currentSprite = lanternSprite[framefloatingLantern];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        }
-        else { // Draw border of stars
+        } else if (isFlower) {
+            Image currentSprite = flowerSprite[frameFlower];
+            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
+        } else { // Draw border of stars
                 int drawX = 0;
                 int drawY = 0;
                 double d = distance % (mapWidth * 2 + mapHeight * 2);
@@ -240,14 +263,21 @@ public class Projectile {
             x += dx;
             y += dy;
 
-            if (y <= 0) {
-                y = mapHeight;
-                x = Math.random() * mapWidth;
-            }
-
             frameFloatingLanternCounter++;
             if (frameFloatingLanternCounter % 10 == 0) {
                 framefloatingLantern = (framefloatingLantern + 1) % lanternSprite.length;
+            }
+        } else if (isFlower) {
+            double dx = targetX - x;
+            double dy = targetY - y;
+            double dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 1) {
+                x += dx/dist * speed;
+                y += dy/dist * speed;
+            }
+            frameFlowerCounter++;
+            if (frameFlowerCounter % 10 == 0) {
+                frameFlower = (frameFlowerCounter + 1) % flowerSprite.length;
             }
         } else {
             distance += speed;
@@ -272,6 +302,8 @@ public class Projectile {
         } else if (isExpandingShard) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else if (isFloatingLantern) {
+            return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
+        } else if (isFlower) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else {
             int x = 0;

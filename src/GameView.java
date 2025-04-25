@@ -20,17 +20,21 @@ public class GameView extends JPanel implements KeyListener {
     private ArrayList<Projectile> fireworks = new ArrayList<>();
     private ArrayList<Projectile> shards = new ArrayList<>();
     private ArrayList<Projectile> floatingLanterns = new ArrayList<>();
+    private ArrayList<Projectile> flowers = new ArrayList<>();
     private Image[] starSprites = new Image[4];
     private Image[] flameSprites = new Image[4];
     private Image[] lanternSprites = new Image[4];
     private Image[] fireworkSprites = new Image[4];
     private Image[] shardSprites = new Image[4];
+    private Image[] flowerSprites = new Image[4];
     private long startTime;
     private double spiralAngle = 0;
+    private double spiralAngle2 = 0;
     private int flameSpawnCooldown = 0;
     private int lanternSpawnCooldown = 0;
     private int fireworkSpawnCooldown = 0;
     private int floatingLanternSpawnCooldown = 0;
+    private int flowerSpawnCooldown = 0;
     private int numTimesLooped = 0;
     private int regenCounter = 0;
     private int perimeter = 8000;
@@ -38,7 +42,21 @@ public class GameView extends JPanel implements KeyListener {
     private boolean isPlayingGame = false;
     private boolean isInMenu = false;
 
+    private JButton startButton;
+
     // Phase repetitions in cycles ~16ms per tick
+
+    public void setIsPlayingGame(Boolean status) {
+        isPlayingGame = status;
+        isInMenu = !status;
+
+        if (isPlayingGame) {
+            remove(startButton);
+            revalidate();
+            repaint();
+            startGame();
+        }
+    }
 
     public GameView(Player player) {
         this.player = player;
@@ -46,162 +64,238 @@ public class GameView extends JPanel implements KeyListener {
         requestFocusInWindow();
         addKeyListener(this);
         initializeImages();
-        isInMenu = true;
-        if (isInMenu) {
 
+        setLayout(null);
+        startButton = new JButton("Start");
+        startButton.setBounds(400, 400, 200, 50);
+        startButton.addActionListener(e -> setIsPlayingGame(true));
+        add(startButton);
+        setIsPlayingGame(false);
+    }
+
+    public void startGame() {
+        int spacing = perimeter / 80;
+
+        for (int i = 0; i < 80; i++) { // Create 80 bordering projectiles
+            int start = i * spacing;
+            stars.add(new Projectile(start, 2, 2000, 2000, starSprites[i % 4]));
         }
 
-        if (isPlayingGame) {
-            int spacing = perimeter / 80;
-
-            for (int i = 0; i < 80; i++) { // Create 80 bordering projectiles
-                int start = i * spacing;
-                stars.add(new Projectile(start, 2, 2000, 2000, starSprites[i % 4]));
+        timer = new Timer(16, e -> {
+//            regenCounter++;
+//            if (regenCounter >= 100) {
+//                player.regenerateHp(5);
+//                regenCounter = 0;
+//            }
+            boolean moving = false;
+            if (keysPressed.contains(KeyEvent.VK_W)) { // Up
+                player.moveDown();
+                moving = true;
+            }
+            if (keysPressed.contains(KeyEvent.VK_S)) { // Down
+                player.moveUp();
+                moving = true;
+            }
+            if (keysPressed.contains(KeyEvent.VK_A)) { // Left
+                player.moveLeft();
+                moving = true;
+            }
+            if (keysPressed.contains(KeyEvent.VK_D)) { // Right
+                player.moveRight();
+                moving = true;
             }
 
-            timer = new Timer(16, e -> {
-                regenCounter++;
-                if (regenCounter >= 100) {
-                    player.regenerateHp(5);
-                    regenCounter = 0;
-                }
-                boolean moving = false;
-                if (keysPressed.contains(KeyEvent.VK_W)) { // Up
-                    player.moveDown();
-                    moving = true;
-                }
-                if (keysPressed.contains(KeyEvent.VK_S)) { // Down
-                    player.moveUp();
-                    moving = true;
-                }
-                if (keysPressed.contains(KeyEvent.VK_A)) { // Left
-                    player.moveLeft();
-                    moving = true;
-                }
-                if (keysPressed.contains(KeyEvent.VK_D)) { // Right
-                    player.moveRight();
-                    moving = true;
-                }
+            if (!moving) player.stopMoving(); // If not moving stop the animation
 
-                if (!moving) player.stopMoving(); // If not moving stop the animation
+            player.updateAnimation(); // Updates the player frame
 
-                player.updateAnimation(); // Updates the player frame
-
-                // Detect collision with the stars
-                Rectangle playerHitbox = player.getHitbox();
-                for (Projectile star : stars) {
-                    if (star.getHitbox().intersects(playerHitbox)) {
-                        player.takeDamage(5);
-                        break;
-                    }
+            // Detect collision with the star border
+            Rectangle playerHitbox = player.getHitbox();
+            for (Projectile star : stars) {
+                if (star.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(10);
+                    break;
                 }
+            }
 
-                // Detects collision with flames
-                for (Projectile flame : flames) {
-                    if (!flame.isHasHitPlayer() && flame.getHitbox().intersects(playerHitbox)) {
-                        player.takeDamage(5);
-                        flame.setHasHitPlayer(true);
-                    }
+            // Detects collision with flames
+            for (Projectile flame : flames) {
+                if (!flame.isHasHitPlayer() && flame.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(5);
+                    flame.setHasHitPlayer(true);
                 }
+            }
 
-                // Detects collision with lanterns
-                for (Projectile lantern : lanterns) {
-                    if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
-                        player.takeDamage(20);
-                        lantern.setHasHitPlayer(true);
-                    }
+            // Detects collision with lanterns
+            for (Projectile lantern : lanterns) {
+                if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(20);
+                    lantern.setHasHitPlayer(true);
                 }
+            }
 
-                // Detects collision with fireworks
-                for (Projectile firework : fireworks) {
-                    if (!firework.isHasHitPlayer() && firework.getHitbox().intersects(playerHitbox)) {
-                        player.takeDamage(5);
-                        firework.setHasHitPlayer(true);
-                    }
+            // Detects collision with fireworks
+            for (Projectile firework : fireworks) {
+                if (!firework.isHasHitPlayer() && firework.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(5);
+                    firework.setHasHitPlayer(true);
                 }
+            }
 
-                // Detects collision with shards
-                for (Projectile shard : shards) {
-                    if (shard.getHitbox().intersects(playerHitbox)) {
-                        player.takeDamage(1);
-                        break;
-                    }
+            // Detects collision with shards
+            for (Projectile shard : shards) {
+                if (shard.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(1);
+                    break;
                 }
+            }
 
-                // Detects collision with floating lanterns
-                for (Projectile floatingLantern : floatingLanterns) {
-                    if (!floatingLantern.isHasHitPlayer() && floatingLantern.getHitbox().intersects(playerHitbox)) {
-                        player.takeDamage(20);
-                        floatingLantern.setHasHitPlayer(true);
-                    }
+            // Detects collision with floating lanterns
+            for (Projectile floatingLantern : floatingLanterns) {
+                if (!floatingLantern.isHasHitPlayer() && floatingLantern.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(20);
+                    floatingLantern.setHasHitPlayer(true);
                 }
+            }
 
-                numTimesLooped++;
-
-                // Flame Spiral Phase 1 ~10 seconds
-                if (numTimesLooped < 625) {
-                    // Increase cooldown
-                    flameSpawnCooldown++;
-                    if (flameSpawnCooldown % 5 == 0) {
-                        double radius = 1250;
-                        // Parametric equation of a circle to place points on the circle
-                        double x = 1000 + radius * Math.cos(spiralAngle);
-                        double y = 1000 + radius * Math.sin(spiralAngle);
-                        flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
-                        spiralAngle += 0.5;
-                    }
+            // Detects collision with flowers
+            for (Projectile flower : flowers) {
+                if (flower.getHitbox().intersects(playerHitbox)) {
+                    player.takeDamage(1);
                 }
+            }
 
-                // Flame Spiral Phase 2 ~10 seconds
-                if (numTimesLooped >= 625 && numTimesLooped < 1250) {
-                    // Increase cooldown
-                    flameSpawnCooldown++;
-                    if (flameSpawnCooldown % 5 == 0) {
-                        double radius = 1250;
-                        // Parametric equation of a circle to place points on the circle
-                        double x = 1000 + radius * Math.cos(spiralAngle);
-                        double y = 1000 + radius * Math.sin(spiralAngle);
-                        flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
-                        spiralAngle -= 0.5;
-                    }
+            numTimesLooped++;
+
+            // Flame Spiral Phase 1 ~10 seconds
+            if (numTimesLooped < 640) {
+                // Increase cooldown
+                flameSpawnCooldown++;
+                if (flameSpawnCooldown % 5 == 0) {
+                    double radius = 1250;
+                    // Parametric equation of a circle to place points on the circle
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
+                    spiralAngle += 0.5;
                 }
+            }
 
-                // Lantern Fall Phase 1 ~20 seconds
-                if (numTimesLooped >= 1250 && numTimesLooped < 2500) {
-                    // Increase cooldown
-                    lanternSpawnCooldown++;
-                    if (lanternSpawnCooldown % 5 == 0) {
-                        int randomRow = (int) (Math.random() * 20);
-                        double fallingX = randomRow * 100;
-                        lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 5, 2000, 2000, lanternSprites));
-                    }
+            // Flame Spiral Phase 2 ~10 seconds
+            if (numTimesLooped >= 640 && numTimesLooped < 1280) {
+                // Increase cooldown
+                flameSpawnCooldown++;
+                if (flameSpawnCooldown % 5 == 0) {
+                    double radius = 1250;
+                    spiralAngle += (Math.random() * 0.5 + 0.5);
+                    double angle1 = spiralAngle;
+                    double angle2 = spiralAngle + Math.PI;
+                    double x1 = 1000 + radius * Math.cos(angle1);
+                    double y1 = 1000 + radius * Math.sin(angle1);
+                    double x2 = 1000 + radius * Math.cos(angle2);
+                    double y2 = 1000 + radius * Math.sin(angle2);
+                    flames.add(new Projectile(x1, y1, 40, 60, 50, 2000, 2000, flameSprites));
+                    flames.add(new Projectile(x2, y2, 40, 60, 50, 2000, 2000, flameSprites));
                 }
+            }
 
-                // Lantern Rise Phase 2 ~20 seconds
-                if (numTimesLooped >= 2500 && numTimesLooped < 3750) {
-                    // Increase cooldown
-                    floatingLanternSpawnCooldown++;
-                    if (floatingLanternSpawnCooldown % 25 == 0) {
-                        double randomRow = (int) (Math.random() * 20);
-                        double spawnX = randomRow * 100;
-                        double spawnY = 2000 + 10;
-                        int speed = 1 + (int) (Math.random() * 5);
-                        floatingLanterns.add(new Projectile(spawnX, spawnY, 40.0, 60, speed, 2000, 2000, lanternSprites));
-                    }
+            // Lantern Fall ~20 seconds
+            if (numTimesLooped >= 1280 && numTimesLooped < 2560) {
+                // Increase cooldown
+                lanternSpawnCooldown++;
+                if (lanternSpawnCooldown % 5 == 0) {
+                    int randomRow = (int) (Math.random() * 20);
+                    double fallingX = randomRow * 100;
+                    lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 10, 2000, 2000, lanternSprites));
                 }
+            }
 
-
-                // Checks if player is dead
-                if (player.getHp() <= 0) {
-                    isGameOver = true;
-                    timer.stop();
+            // Lantern Rise ~20 seconds
+            if (numTimesLooped >= 2560 && numTimesLooped < 3840) {
+                // Increase cooldown
+                floatingLanternSpawnCooldown++;
+                if (floatingLanternSpawnCooldown % 5 == 0) {
+                    double randomRow = (int) (Math.random() * 20);
+                    double spawnX = randomRow * 100;
+                    double spawnY = 2000 + 10;
+                    int speed = 3 + (int) (Math.random() * 10);
+                    floatingLanterns.add(new Projectile(spawnX, spawnY, 40.0, 60, speed, 2000, 2000, lanternSprites));
                 }
+            }
 
-                repaint(); // Redraws screen
-            });
-            timer.start();
-            startTime = System.currentTimeMillis();
-        }
+            // Flowers Phase 1 ~20 seconds
+            if (numTimesLooped >= 3840 && numTimesLooped < 5120) {
+                flowerSpawnCooldown++;
+                if (flowerSpawnCooldown % 5 == 0) {
+                    double radius = 1250;
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    int speed = 3 + (int)(Math.random() * 5);
+                    flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    spiralAngle += 0.5;
+                }
+            }
+
+            // Flower Phase 2 ~20 seconds
+            if (numTimesLooped >= 5120 && numTimesLooped < 6400) {
+                flowerSpawnCooldown++;
+                if (flowerSpawnCooldown % 5 == 0) {
+                    double radius = 1250;
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    int speed = 5 + (int)(Math.random() * 5);
+                    flowers.add(new Projectile(1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    spiralAngle += 0.5;
+                }
+            }
+
+            // Flower Phase 3 ~20 seconds
+            if (numTimesLooped >= 6400 && numTimesLooped < 7680) {
+                flowerSpawnCooldown++;
+                if (flowerSpawnCooldown % 3 == 0) {
+                    double radius = 1250;
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    double x2 = 1000 + radius * Math.cos(spiralAngle2);
+                    double y2 = 1000 + radius * Math.sin(spiralAngle2);
+                    int speed = 5 + (int)(Math.random() * 5);
+                    flowers.add(new Projectile(1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    flowers.add(new Projectile(1000, 1000, x2, y2, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    spiralAngle += 0.5;
+                    spiralAngle2 -= 0.5;
+                }
+            }
+
+            // Death
+            if (numTimesLooped >= 7680 && numTimesLooped < 8960) {
+                double radius = 1250;
+                double x = 1000 + radius * Math.cos(spiralAngle);
+                double y = 1000 + radius * Math.sin(spiralAngle);
+                double x2 = 1000 + radius * Math.cos(spiralAngle2);
+                double y2 = 1000 + radius * Math.sin(spiralAngle2);
+                double x3 = 1000 + radius * Math.cos(spiralAngle);
+                double y3 = 1000 + radius * Math.sin(spiralAngle);
+                double x4 = 1000 + radius * Math.cos(spiralAngle2);
+                double y4 = 1000 + radius * Math.sin(spiralAngle2);
+                int speed = 7 + (int)(Math.random() * 5);
+                flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                flowers.add(new Projectile(x2, y2, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                flowers.add(new Projectile(1000, 1000, x3, y3, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                flowers.add(new Projectile(1000, 1000, x4, y4, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                spiralAngle += 0.5;
+                spiralAngle2 -= 0.5;
+            }
+
+            // Checks if player is dead
+            if (player.getHp() <= 0) {
+                isGameOver = true;
+                timer.stop();
+            }
+
+            repaint(); // Redraws screen
+        });
+        timer.start();
+        startTime = System.currentTimeMillis();
     }
 
     public void initializeImages() {
@@ -220,6 +314,10 @@ public class GameView extends JPanel implements KeyListener {
         lanternSprites[1] = new ImageIcon("Resources/Projectiles/lantern2.png").getImage();
         lanternSprites[2] = new ImageIcon("Resources/Projectiles/lantern3.png").getImage();
         lanternSprites[3] = new ImageIcon("Resources/Projectiles/lantern4.png").getImage();
+        flowerSprites[0] = new ImageIcon("Resources/Projectiles/flower_1.png").getImage();
+        flowerSprites[1] = new ImageIcon("Resources/Projectiles/flower_2.png").getImage();
+        flowerSprites[2] = new ImageIcon("Resources/Projectiles/flower_3.png").getImage();
+        flowerSprites[3] = new ImageIcon("Resources/Projectiles/flower_4.png").getImage();
         fireworkSprites[0] = new ImageIcon("Resources/Projectiles/fireball_1.png").getImage();
         fireworkSprites[1] = new ImageIcon("Resources/Projectiles/fireball_2.png").getImage();
         fireworkSprites[2] = new ImageIcon("Resources/Projectiles/fireball_3.png").getImage();
@@ -242,14 +340,20 @@ public class GameView extends JPanel implements KeyListener {
         // Cast to Graphics2D for scaling
         Graphics2D g2d = (Graphics2D) g;
 
+        // Fill background black
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        if (isInMenu) {
+            g2d.drawImage(menuImage, 0, 0, this);
+            return;
+        }
+
         if (isGameOver) {
             g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
             return;
         }
 
-        if (isInMenu) {
-            g2d.drawImage(menuImage, 0, 0, this);
-        }
 
         // Save original transform
         var oldTransform = g2d.getTransform();
@@ -259,10 +363,6 @@ public class GameView extends JPanel implements KeyListener {
         g2d.translate(-offsetX, -offsetY);
 
         if (isPlayingGame) {
-            // Fill background black
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-
             // Draw map and player
             g.drawImage(mapImage, 0, 0, this);
 
@@ -284,6 +384,20 @@ public class GameView extends JPanel implements KeyListener {
                 int tolerance = 5;
                 if (Math.abs(flame.getX() - 1000) < tolerance && Math.abs(flame.getY() - 1000) < tolerance) {
                     flameIterator.remove();
+                }
+            }
+
+            // Remove the flame once it reaches the center of the map
+            Iterator<Projectile> flowerIterator = flowers.iterator();
+            while (flowerIterator.hasNext()) { // Repeats until no more lanterns
+                Projectile flower = flowerIterator.next();
+                flower.draw(g2d);
+                flower.update();
+
+                // Removes lantern if in the middle
+                int tolerance = 5;
+                if (Math.abs(flower.getX() - 1000) < tolerance && Math.abs(flower.getY() - 1000) < tolerance) {
+                    flowerIterator.remove();
                 }
             }
 
@@ -372,11 +486,14 @@ public class GameView extends JPanel implements KeyListener {
         fireworks.clear();
         shards.clear();
         floatingLanterns.clear();
+        flowers.clear();
         spiralAngle = 0;
+        spiralAngle2 = 0;
         flameSpawnCooldown = 0;
         lanternSpawnCooldown = 0;
         fireworkSpawnCooldown = 0;
         floatingLanternSpawnCooldown = 0;
+        flowerSpawnCooldown = 0;
         numTimesLooped = 0;
         isGameOver = false;
 
