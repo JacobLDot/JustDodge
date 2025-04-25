@@ -12,8 +12,9 @@ public class Player {
     // Player stats
     private final int size = 80;
     private final int speed = 7;
-    private int hp = 100;
-    private final int maxHp = 100;
+    private int hp;
+    private int maxHp;
+    private String difficulty;
 
     // Sprite settings
     private int frame = 0;
@@ -28,6 +29,14 @@ public class Player {
         this.worldX = x;
         this.worldY = y;
         loadSprites();
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public void setMaxHp(int maxHp) {
+        this.maxHp = maxHp;
     }
 
     // Loads the player sprites
@@ -136,6 +145,7 @@ public class Player {
     // Resets to start when game is reset
     public void reset() {
         this.hp = 100;
+        this.maxHp = 100;
         this.worldX = MAP_WIDTH / 2;
         this.worldY = (int)(MAP_HEIGHT * 0.7805);
         this.isMoving = false;

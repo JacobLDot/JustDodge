@@ -13,7 +13,14 @@ public class GameView extends JPanel implements KeyListener {
     private Image mapImage;
     private Image menuImage;
     private Image deathImage;
+    private Image startImage;
+    private Image selectDifficultyImage;
+    private Image easyImage;
+    private Image defaultImage;
+    private Image hardImage;
     private static final double ZOOM = 0.60;
+    public static final int MAP_WIDTH = 2000;
+    public static final int MAP_HEIGHT = 2000;
     private ArrayList<Projectile> flames = new ArrayList<>();
     private ArrayList<Projectile> stars = new ArrayList<>();
     private ArrayList<Projectile> lanterns = new ArrayList<>();
@@ -41,25 +48,86 @@ public class GameView extends JPanel implements KeyListener {
     private boolean isGameOver = false;
     private boolean isPlayingGame = false;
     private boolean isInMenu = false;
+    private boolean isInDifficultyMenu = false;
+    private String difficulty = "default";
 
     private JButton startButton;
-
-    // Phase repetitions in cycles ~16ms per tick
+    private JButton selectButton;
+    private JButton easyButton;
+    private JButton defaultButton;
+    private JButton hardButton;
 
     public void setIsPlayingGame(Boolean status) {
         isPlayingGame = status;
         isInMenu = !status;
+        isInDifficultyMenu = !status;
 
         if (isPlayingGame) {
             remove(startButton);
+            remove(selectButton);
             revalidate();
             repaint();
+            requestFocusInWindow();
             startGame();
         }
     }
 
-    public GameView(Player player) {
-        this.player = player;
+    public void setIsInMenu(Boolean status) {
+        removeAll();
+        isInDifficultyMenu = status;
+        isPlayingGame = !status;
+        isInMenu = !status;
+
+        if (isInDifficultyMenu) {
+            remove(startButton);
+            remove(selectButton);
+            easyButton = new JButton("Easy");
+            easyButton.setBounds(400, 400, 200, 50);
+            easyButton.addActionListener(e -> {
+                difficulty = "easy";
+                player.setHp(200);
+                player.setMaxHp(200);
+                returnToMenu();
+            });
+            defaultButton = new JButton("Default");
+            defaultButton.setBounds(400, 500, 200, 50);
+            defaultButton.addActionListener(e -> {
+                difficulty = "default";
+                player.setHp(100);
+                player.setMaxHp(100);
+                returnToMenu();
+            });
+            hardButton = new JButton("Hard");
+            hardButton.setBounds(400, 600, 200, 50);
+            hardButton.addActionListener(e -> {
+                difficulty = "hard";
+                player.setHp(75);
+                player.setMaxHp(75);
+                returnToMenu();
+            });
+
+            add(easyButton);
+            add(defaultButton);
+            add(hardButton);
+
+            revalidate();
+            repaint();
+        }
+    }
+
+    private void returnToMenu() {
+        removeAll();
+        add(startButton);
+        add(selectButton);
+        setIsPlayingGame(false);
+        revalidate();
+        repaint();
+    }
+
+    public GameView() {
+        int playerStartX = MAP_WIDTH / 2;
+        int playerStartY = (int)(MAP_HEIGHT * 0.7805);
+        this.player =  new Player(playerStartX, playerStartY);
         setFocusable(true);
         requestFocusInWindow();
         addKeyListener(this);
@@ -70,6 +138,12 @@ public class GameView extends JPanel implements KeyListener {
         startButton.setBounds(400, 400, 200, 50);
         startButton.addActionListener(e -> setIsPlayingGame(true));
         add(startButton);
+
+        selectButton = new JButton("Select Difficulty");
+        selectButton.setBounds(400, 500, 200, 50);
+        selectButton.addActionListener(e -> setIsInMenu(true));
+        add(selectButton);
+
         setIsPlayingGame(false);
     }
 
@@ -81,12 +155,24 @@ public class GameView extends JPanel implements KeyListener {
             stars.add(new Projectile(start, 2, 2000, 2000, starSprites[i % 4]));
         }
 
+        // Phase repetitions in cycles ~16ms per tick
         timer = new Timer(16, e -> {
-//            regenCounter++;
-//            if (regenCounter >= 100) {
-//                player.regenerateHp(5);
-//                regenCounter = 0;
-//            }
+            System.out.println(difficulty + player.getHp() + player.getMaxHp());
+            // Regenerates hp based on level
+            regenCounter++;
+            if (difficulty.equals("easy")) {
+                if (regenCounter >= 150) {
+                    player.regenerateHp(5);
+                    regenCounter = 0;
+                }
+            } else if (difficulty.equals("default")) {
+                if (regenCounter >= 400) {
+                    player.regenerateHp(5);
+                    regenCounter = 0;
+                }
+            } else {
+                regenCounter = 0;
+            }
             boolean moving = false;
             if (keysPressed.contains(KeyEvent.VK_W)) { // Up
                 player.moveDown();
@@ -302,6 +388,12 @@ public class GameView extends JPanel implements KeyListener {
         mapImage = new ImageIcon("Resources/map.png").getImage();
         menuImage = new ImageIcon("Resources/menu.png").getImage();
         deathImage = new ImageIcon("Resources/death.png").getImage();
+        startImage = new ImageIcon("Resources/start.png").getImage();
+        selectDifficultyImage = new ImageIcon("Resources/selectdifficulty.png").getImage();
+        easyImage = new ImageIcon("Resources/easy.png").getImage();
+        defaultImage = new ImageIcon("Resources/default.png").getImage();
+        hardImage = new ImageIcon("Resources/hard.png").getImage();
+
         starSprites[0] = new ImageIcon("Resources/Projectiles/blue_star.png").getImage();
         starSprites[1] = new ImageIcon("Resources/Projectiles/green_star.png").getImage();
         starSprites[2] = new ImageIcon("Resources/Projectiles/red_star.png").getImage();
@@ -344,8 +436,20 @@ public class GameView extends JPanel implements KeyListener {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        if (isInMenu) {
+        if (isInMenu || isInDifficultyMenu) {
             g2d.drawImage(menuImage, 0, 0, this);
+        }
+
+        if (isInMenu) {
+            g2d.drawImage(startImage, 400, 400, 200, 50, this);
+            g2d.drawImage(selectDifficultyImage, 400, 500, 200, 50, this);
+            return;
+        }
+
+        if (isInDifficultyMenu) {
+            g2d.drawImage(easyImage, 400, 400, 200, 50, this);
+            g2d.drawImage(defaultImage, 400, 500, 200, 50, this);
+            g2d.drawImage(hardImage, 400, 600, 200, 50, this);
             return;
         }
 
@@ -480,6 +584,7 @@ public class GameView extends JPanel implements KeyListener {
 
     public void restartGame() {
         player.reset();
+        difficulty = "default";
         flames.clear();
         stars.clear();
         lanterns.clear();
@@ -496,6 +601,9 @@ public class GameView extends JPanel implements KeyListener {
         flowerSpawnCooldown = 0;
         numTimesLooped = 0;
         isGameOver = false;
+        isInMenu = true;
+        setIsPlayingGame(false);
+        returnToMenu();
 
         int perimeter = 8000;
         int spacing = perimeter / 80;
@@ -505,8 +613,7 @@ public class GameView extends JPanel implements KeyListener {
             stars.add(new Projectile(start, 2, 2000, 2000, starSprites[i % 4]));
         }
 
-        timer.start();
-        startTime = System.currentTimeMillis();
+        timer.stop();
     }
 
     @Override
