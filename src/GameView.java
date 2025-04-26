@@ -18,6 +18,7 @@ public class GameView extends JPanel implements KeyListener {
     private Image easyImage;
     private Image defaultImage;
     private Image hardImage;
+    private Image nightmareImage;
     private static final double ZOOM = 0.60;
     public static final int MAP_WIDTH = 2000;
     public static final int MAP_HEIGHT = 2000;
@@ -57,6 +58,7 @@ public class GameView extends JPanel implements KeyListener {
     private JButton easyButton;
     private JButton defaultButton;
     private JButton hardButton;
+    private JButton nightmareButton;
 
     public void setIsPlayingGame(Boolean status) {
         isPlayingGame = status;
@@ -106,10 +108,19 @@ public class GameView extends JPanel implements KeyListener {
                 player.setMaxHp(75);
                 returnToMenu();
             });
+            nightmareButton = new JButton("Nightmare");
+            nightmareButton.setBounds(279, 700, 442, 50);
+            nightmareButton.addActionListener(e -> {
+                difficulty = "nightmare";
+                player.setHp(25);
+                player.setMaxHp(25);
+                returnToMenu();
+            });
 
             add(easyButton);
             add(defaultButton);
             add(hardButton);
+            add(nightmareButton);
 
             revalidate();
             repaint();
@@ -172,8 +183,13 @@ public class GameView extends JPanel implements KeyListener {
                     player.regenerateHp(5);
                     regenCounter = 0;
                 }
-            } else {
+            } else if (difficulty.equals("hard")){
                 regenCounter = 0;
+            } else {
+                if (regenCounter >= 100) {
+                    player.regenerateHp(1);
+                    regenCounter = 0;
+                }
             }
             boolean moving = false;
             if (keysPressed.contains(KeyEvent.VK_W)) { // Up
@@ -395,6 +411,7 @@ public class GameView extends JPanel implements KeyListener {
         easyImage = new ImageIcon("Resources/easy2.png").getImage();
         defaultImage = new ImageIcon("Resources/default2.png").getImage();
         hardImage = new ImageIcon("Resources/hard2.png").getImage();
+        nightmareImage = new ImageIcon("Resources/nightmare.png").getImage();
 
         starSprites[0] = new ImageIcon("Resources/Projectiles/blue_star.png").getImage();
         starSprites[1] = new ImageIcon("Resources/Projectiles/green_star.png").getImage();
@@ -452,6 +469,7 @@ public class GameView extends JPanel implements KeyListener {
             g2d.drawImage(easyImage, 279, 400, 442, 50, this);
             g2d.drawImage(defaultImage, 279, 500, 442, 50, this);
             g2d.drawImage(hardImage, 279, 600, 442, 50, this);
+            g2d.drawImage(nightmareImage, 279, 700, 442, 50, this);
             return;
         }
 
