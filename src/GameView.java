@@ -35,6 +35,7 @@ public class GameView extends JPanel implements KeyListener {
     private Image[] shardSprites = new Image[4];
     private Image[] flowerSprites = new Image[4];
     private long startTime;
+    private double survivalTime;
     private double spiralAngle = 0;
     private double spiralAngle2 = 0;
     private int flameSpawnCooldown = 0;
@@ -82,7 +83,7 @@ public class GameView extends JPanel implements KeyListener {
             remove(startButton);
             remove(selectButton);
             easyButton = new JButton("Easy");
-            easyButton.setBounds(400, 400, 200, 50);
+            easyButton.setBounds(279, 400, 442, 50);
             easyButton.addActionListener(e -> {
                 difficulty = "easy";
                 player.setHp(200);
@@ -90,7 +91,7 @@ public class GameView extends JPanel implements KeyListener {
                 returnToMenu();
             });
             defaultButton = new JButton("Default");
-            defaultButton.setBounds(400, 500, 200, 50);
+            defaultButton.setBounds(279, 500, 442, 50);
             defaultButton.addActionListener(e -> {
                 difficulty = "default";
                 player.setHp(100);
@@ -98,7 +99,7 @@ public class GameView extends JPanel implements KeyListener {
                 returnToMenu();
             });
             hardButton = new JButton("Hard");
-            hardButton.setBounds(400, 600, 200, 50);
+            hardButton.setBounds(279, 600, 442, 50);
             hardButton.addActionListener(e -> {
                 difficulty = "hard";
                 player.setHp(75);
@@ -128,6 +129,8 @@ public class GameView extends JPanel implements KeyListener {
         int playerStartX = MAP_WIDTH / 2;
         int playerStartY = (int)(MAP_HEIGHT * 0.7805);
         this.player =  new Player(playerStartX, playerStartY);
+        player.setHp(100);
+        player.setMaxHp(100);
         setFocusable(true);
         requestFocusInWindow();
         addKeyListener(this);
@@ -135,12 +138,12 @@ public class GameView extends JPanel implements KeyListener {
 
         setLayout(null);
         startButton = new JButton("Start");
-        startButton.setBounds(400, 400, 200, 50);
+        startButton.setBounds(279, 400, 442, 50);
         startButton.addActionListener(e -> setIsPlayingGame(true));
         add(startButton);
 
         selectButton = new JButton("Select Difficulty");
-        selectButton.setBounds(400, 500, 200, 50);
+        selectButton.setBounds(279, 500, 442, 50);
         selectButton.addActionListener(e -> setIsInMenu(true));
         add(selectButton);
 
@@ -157,7 +160,6 @@ public class GameView extends JPanel implements KeyListener {
 
         // Phase repetitions in cycles ~16ms per tick
         timer = new Timer(16, e -> {
-            System.out.println(difficulty + player.getHp() + player.getMaxHp());
             // Regenerates hp based on level
             regenCounter++;
             if (difficulty.equals("easy")) {
@@ -388,11 +390,11 @@ public class GameView extends JPanel implements KeyListener {
         mapImage = new ImageIcon("Resources/map.png").getImage();
         menuImage = new ImageIcon("Resources/menu.png").getImage();
         deathImage = new ImageIcon("Resources/death.png").getImage();
-        startImage = new ImageIcon("Resources/start.png").getImage();
-        selectDifficultyImage = new ImageIcon("Resources/selectdifficulty.png").getImage();
-        easyImage = new ImageIcon("Resources/easy.png").getImage();
-        defaultImage = new ImageIcon("Resources/default.png").getImage();
-        hardImage = new ImageIcon("Resources/hard.png").getImage();
+        startImage = new ImageIcon("Resources/start2.png").getImage();
+        selectDifficultyImage = new ImageIcon("Resources/selectdifficulty2.png").getImage();
+        easyImage = new ImageIcon("Resources/easy2.png").getImage();
+        defaultImage = new ImageIcon("Resources/default2.png").getImage();
+        hardImage = new ImageIcon("Resources/hard2.png").getImage();
 
         starSprites[0] = new ImageIcon("Resources/Projectiles/blue_star.png").getImage();
         starSprites[1] = new ImageIcon("Resources/Projectiles/green_star.png").getImage();
@@ -441,23 +443,28 @@ public class GameView extends JPanel implements KeyListener {
         }
 
         if (isInMenu) {
-            g2d.drawImage(startImage, 400, 400, 200, 50, this);
-            g2d.drawImage(selectDifficultyImage, 400, 500, 200, 50, this);
+            g2d.drawImage(startImage, 279, 400, 442, 50, this);
+            g2d.drawImage(selectDifficultyImage, 279, 500, 442, 50, this);
             return;
         }
 
         if (isInDifficultyMenu) {
-            g2d.drawImage(easyImage, 400, 400, 200, 50, this);
-            g2d.drawImage(defaultImage, 400, 500, 200, 50, this);
-            g2d.drawImage(hardImage, 400, 600, 200, 50, this);
+            g2d.drawImage(easyImage, 279, 400, 442, 50, this);
+            g2d.drawImage(defaultImage, 279, 500, 442, 50, this);
+            g2d.drawImage(hardImage, 279, 600, 442, 50, this);
             return;
         }
 
         if (isGameOver) {
+            survivalTime = (System.currentTimeMillis() - startTime) / 1000;
             g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
+            g2d.setColor(Color.RED);
+            g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
+            g2d.drawString("You survived for " + survivalTime + " seconds!", 250, 550);
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("DialogInput", Font.BOLD, 15));
             return;
         }
-
 
         // Save original transform
         var oldTransform = g2d.getTransform();
