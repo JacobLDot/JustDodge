@@ -460,9 +460,10 @@ public class GameView extends JPanel implements KeyListener {
             g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
             g2d.setColor(Color.RED);
             g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
-            g2d.drawString("You survived for " + survivalTime + " seconds!", 250, 550);
+            g2d.drawString("You survived for " + survivalTime + " seconds!", 275, 550);
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("DialogInput", Font.BOLD, 15));
+            g2d.drawString("Press R for Menu", 430, 715);
             return;
         }
 
