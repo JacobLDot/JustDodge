@@ -289,15 +289,16 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 640 && numTimesLooped < 1280) {
                 // Increase cooldown
                 flameSpawnCooldown++;
-                if (flameSpawnCooldown % 5 == 0) {
+                if (flameSpawnCooldown % 3 == 0) {
                     double radius = 1250;
-                    spiralAngle += (Math.random() * 0.5 + 0.5);
+                    spiralAngle += (Math.random() * 360);
+                    spiralAngle2 -= (Math.random() * 360);
                     double angle1 = spiralAngle;
-                    double angle2 = spiralAngle + Math.PI;
+                    double angle2 = spiralAngle2;
                     double x1 = 1000 + radius * Math.cos(angle1);
                     double y1 = 1000 + radius * Math.sin(angle1);
-                    double x2 = 1000 + radius * Math.cos(angle2);
-                    double y2 = 1000 + radius * Math.sin(angle2);
+                    double x2 = 1000 + radius * Math.cos(-angle2);
+                    double y2 = 1000 + radius * Math.sin(-angle2);
                     flames.add(new Projectile(x1, y1, 40, 60, 50, 2000, 2000, flameSprites));
                     flames.add(new Projectile(x2, y2, 40, 60, 50, 2000, 2000, flameSprites));
                 }
