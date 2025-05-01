@@ -88,8 +88,8 @@ public class GameView extends JPanel implements KeyListener {
             easyButton.setBounds(279, 400, 442, 50);
             easyButton.addActionListener(e -> {
                 difficulty = "easy";
-                player.setHp(400);
-                player.setMaxHp(400);
+                player.setHp(250);
+                player.setMaxHp(250);
                 returnToMenu();
             });
             defaultButton = new JButton("Default");
