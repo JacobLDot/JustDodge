@@ -372,7 +372,7 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Lantern Fall ~20 seconds
-            if (numTimesLooped >= 7680 && numTimesLooped < 8960) {
+            if (numTimesLooped >= 7680) { // && numTimesLooped < 8960
                 // Increase cooldown
                 lanternSpawnCooldown++;
                 if (lanternSpawnCooldown % 1 == 0) {
@@ -390,25 +390,25 @@ public class GameView extends JPanel implements KeyListener {
                 }
             }
 
-            // Death
-            if (numTimesLooped >= 8960 && numTimesLooped < 10240) {
-                double radius = 1250;
-                double x = 1000 + radius * Math.cos(spiralAngle);
-                double y = 1000 + radius * Math.sin(spiralAngle);
-                double x2 = 1000 + radius * Math.cos(spiralAngle2);
-                double y2 = 1000 + radius * Math.sin(spiralAngle2);
-                double x3 = 1000 + radius * Math.cos(spiralAngle);
-                double y3 = 1000 + radius * Math.sin(spiralAngle);
-                double x4 = 1000 + radius * Math.cos(spiralAngle2);
-                double y4 = 1000 + radius * Math.sin(spiralAngle2);
-                int speed = 7 + (int)(Math.random() * 5);
-                flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                flowers.add(new Projectile(x2, y2, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                flowers.add(new Projectile(1000, 1000, x3, y3, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                flowers.add(new Projectile(1000, 1000, x4, y4, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                spiralAngle += 0.5;
-                spiralAngle2 -= 0.5;
-            }
+//            // Death
+//            if (numTimesLooped >= 8960 && numTimesLooped < 10240) {
+//                double radius = 1250;
+//                double x = 1000 + radius * Math.cos(spiralAngle);
+//                double y = 1000 + radius * Math.sin(spiralAngle);
+//                double x2 = 1000 + radius * Math.cos(spiralAngle2);
+//                double y2 = 1000 + radius * Math.sin(spiralAngle2);
+//                double x3 = 1000 + radius * Math.cos(spiralAngle);
+//                double y3 = 1000 + radius * Math.sin(spiralAngle);
+//                double x4 = 1000 + radius * Math.cos(spiralAngle2);
+//                double y4 = 1000 + radius * Math.sin(spiralAngle2);
+//                int speed = 7 + (int)(Math.random() * 5);
+//                flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                flowers.add(new Projectile(x2, y2, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                flowers.add(new Projectile(1000, 1000, x3, y3, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                flowers.add(new Projectile(1000, 1000, x4, y4, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                spiralAngle += 0.5;
+//                spiralAngle2 -= 0.5;
+//            }
 
             // Checks if player is dead
             if (player.getHp() <= 0) {
