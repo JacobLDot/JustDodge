@@ -88,8 +88,8 @@ public class GameView extends JPanel implements KeyListener {
             easyButton.setBounds(279, 400, 442, 50);
             easyButton.addActionListener(e -> {
                 difficulty = "easy";
-                player.setHp(200);
-                player.setMaxHp(200);
+                player.setHp(400);
+                player.setMaxHp(400);
                 returnToMenu();
             });
             defaultButton = new JButton("Default");
@@ -104,8 +104,8 @@ public class GameView extends JPanel implements KeyListener {
             hardButton.setBounds(279, 600, 442, 50);
             hardButton.addActionListener(e -> {
                 difficulty = "hard";
-                player.setHp(75);
-                player.setMaxHp(75);
+                player.setHp(100);
+                player.setMaxHp(100);
                 returnToMenu();
             });
             nightmareButton = new JButton("Nightmare");
@@ -174,12 +174,12 @@ public class GameView extends JPanel implements KeyListener {
             // Regenerates hp based on level
             regenCounter++;
             if (difficulty.equals("easy")) {
-                if (regenCounter >= 150) {
+                if (regenCounter >= 50) {
                     player.regenerateHp(5);
                     regenCounter = 0;
                 }
             } else if (difficulty.equals("default")) {
-                if (regenCounter >= 400) {
+                if (regenCounter >= 200) {
                     player.regenerateHp(5);
                     regenCounter = 0;
                 }
