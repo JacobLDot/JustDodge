@@ -69,7 +69,7 @@ public class Projectile {
     }
 
     // For rotating inward flames
-    public Projectile(double x, double y, int width, int height, int speed, int mapWidth, int mapHeight, Image[] flameSprite) {
+    public Projectile(double x, double y, int width, int height, int targetX, int targetY, int speed, int mapWidth, int mapHeight, Image[] flameSprite) {
         this.isRotatingFlame = true;
         this.x = x;
         this.y = y;
@@ -79,8 +79,8 @@ public class Projectile {
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.flameSprite = flameSprite;
-        this.targetX = mapWidth / 2;
-        this.targetY = mapHeight / 2;
+        this.targetX = targetX;
+        this.targetY = targetY;
     }
 
     // Falling lanterns

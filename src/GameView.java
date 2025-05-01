@@ -280,7 +280,7 @@ public class GameView extends JPanel implements KeyListener {
                     // Parametric equation of a circle to place points on the circle
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 40, 60, 50, 2000, 2000, flameSprites));
+                    flames.add(new Projectile(x, y, 80, 80, 1000, 1000,50, 2000, 2000, flowerSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -299,8 +299,8 @@ public class GameView extends JPanel implements KeyListener {
                     double y1 = 1000 + radius * Math.sin(angle1);
                     double x2 = 1000 + radius * Math.cos(-angle2);
                     double y2 = 1000 + radius * Math.sin(-angle2);
-                    flames.add(new Projectile(x1, y1, 40, 60, 50, 2000, 2000, flameSprites));
-                    flames.add(new Projectile(x2, y2, 40, 60, 50, 2000, 2000, flameSprites));
+                    flames.add(new Projectile(x1, y1, 80, 80, 1000, 1000,50, 2000, 2000, flowerSprites));
+                    flames.add(new Projectile(x2, y2, 80, 80, 1000,1000,50, 2000, 2000, flowerSprites));
                 }
             }
 
@@ -311,7 +311,7 @@ public class GameView extends JPanel implements KeyListener {
                 if (lanternSpawnCooldown % 5 == 0) {
                     int randomRow = (int) (Math.random() * 20);
                     double fallingX = randomRow * 100;
-                    lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 10, 2000, 2000, lanternSprites));
+                    lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
                 }
             }
 
@@ -324,7 +324,7 @@ public class GameView extends JPanel implements KeyListener {
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
                     int speed = 3 + (int) (Math.random() * 10);
-                    floatingLanterns.add(new Projectile(spawnX, spawnY, 40.0, 60, speed, 2000, 2000, lanternSprites));
+                    floatingLanterns.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
                 }
             }
 
@@ -371,8 +371,27 @@ public class GameView extends JPanel implements KeyListener {
                 }
             }
 
-            // Death
+            // Lantern Fall ~20 seconds
             if (numTimesLooped >= 7680 && numTimesLooped < 8960) {
+                // Increase cooldown
+                lanternSpawnCooldown++;
+                if (lanternSpawnCooldown % 1 == 0) {
+                    int randomRow = (int) (Math.random() * 5);
+                    int randomRow2 = (int) (Math.random() * 5) + 15;
+                    double fallingX = randomRow * 100;
+                    double fallingX2 = randomRow2 * 100;
+                    lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
+                    lanterns.add(new Projectile(fallingX2, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
+                }
+                if (lanternSpawnCooldown % 10 == 0) {
+                    int randomRow3 = (int) (Math.random() * 10) + 5;
+                    double fallingX3 = randomRow3 * 100;
+                    lanterns.add(new Projectile(fallingX3, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
+                }
+            }
+
+            // Death
+            if (numTimesLooped >= 8960 && numTimesLooped < 10240) {
                 double radius = 1250;
                 double x = 1000 + radius * Math.cos(spiralAngle);
                 double y = 1000 + radius * Math.sin(spiralAngle);
