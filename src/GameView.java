@@ -104,16 +104,16 @@ public class GameView extends JPanel implements KeyListener {
             hardButton.setBounds(279, 600, 442, 50);
             hardButton.addActionListener(e -> {
                 difficulty = "hard";
-                player.setHp(100);
-                player.setMaxHp(100);
+                player.setHp(75);
+                player.setMaxHp(75);
                 returnToMenu();
             });
             nightmareButton = new JButton("Nightmare");
             nightmareButton.setBounds(279, 700, 442, 50);
             nightmareButton.addActionListener(e -> {
                 difficulty = "nightmare";
-                player.setHp(25);
-                player.setMaxHp(25);
+                player.setHp(50);
+                player.setMaxHp(50);
                 returnToMenu();
             });
 
@@ -174,7 +174,7 @@ public class GameView extends JPanel implements KeyListener {
             // Regenerates hp based on level
             regenCounter++;
             if (difficulty.equals("easy")) {
-                if (regenCounter >= 50) {
+                if (regenCounter >= 100) {
                     player.regenerateHp(5);
                     regenCounter = 0;
                 }
@@ -184,12 +184,12 @@ public class GameView extends JPanel implements KeyListener {
                     regenCounter = 0;
                 }
             } else if (difficulty.equals("hard")){
-                regenCounter = 0;
-            } else {
-                if (regenCounter >= 100) {
-                    player.regenerateHp(1);
+                if (regenCounter >= 400) {
+                    player.regenerateHp(5);
                     regenCounter = 0;
                 }
+            } else {
+                regenCounter = 0;
             }
             boolean moving = false;
             if (keysPressed.contains(KeyEvent.VK_W)) { // Up
@@ -233,7 +233,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with lanterns
             for (Projectile lantern : lanterns) {
                 if (!lantern.isHasHitPlayer() && lantern.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(20);
+                    player.takeDamage(15);
                     lantern.setHasHitPlayer(true);
                 }
             }
@@ -303,8 +303,31 @@ public class GameView extends JPanel implements KeyListener {
                 }
             }
 
-            // Lantern Fall ~20 seconds
+            // Rebound Phase ~ 20 seconds
             if (numTimesLooped >= 1280 && numTimesLooped < 2560) {
+                // Increase cooldown
+                fireworkSpawnCooldown++;
+                if (fireworkSpawnCooldown % 50 == 0) {
+                    int numFireworks = 1;
+                    for (int i = 0; i < numFireworks; i++) {
+                        double angle = i * (360 / numFireworks);
+                        fireworks.add(new Projectile(1000, 1000, 40, 60, 5.5, 2000, 2000, flowerSprites));
+                    }
+                }
+                // Increase cooldown
+                flameSpawnCooldown++;
+                if (flameSpawnCooldown % 5 == 0) {
+                    double radius = 1250;
+                    // Parametric equation of a circle to place points on the circle
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    flames.add(new Projectile(x, y, 80, 80, 1000, 1000,50, 2000, 2000, flowerSprites));
+                    spiralAngle += 0.5;
+                }
+            }
+
+            // Lantern Fall ~20 seconds
+            if (numTimesLooped >= 2560 && numTimesLooped < 3840) {
                 // Increase cooldown
                 lanternSpawnCooldown++;
                 if (lanternSpawnCooldown % 5 == 0) {
@@ -315,20 +338,20 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Lantern Rise ~20 seconds
-            if (numTimesLooped >= 2560 && numTimesLooped < 3840) {
+            if (numTimesLooped >= 3840 && numTimesLooped < 5120) {
                 // Increase cooldown
                 floatingLanternSpawnCooldown++;
                 if (floatingLanternSpawnCooldown % 5 == 0) {
                     double randomRow = (int) (Math.random() * 20);
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
-                    int speed = 3 + (int) (Math.random() * 10);
+                    int speed = 3 + (int) (Math.random() * 7);
                     floatingLanterns.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
                 }
             }
 
             // Flowers Phase 1 ~20 seconds
-            if (numTimesLooped >= 3840 && numTimesLooped < 5120) {
+            if (numTimesLooped >= 5120 && numTimesLooped < 6400) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 5 == 0) {
                     double radius = 1250;
@@ -341,7 +364,7 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Flower Phase 2 ~20 seconds
-            if (numTimesLooped >= 5120 && numTimesLooped < 6400) {
+            if (numTimesLooped >= 6400 && numTimesLooped < 7680) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 5 == 0) {
                     double radius = 1250;
@@ -354,7 +377,7 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Flower Phase 3 ~20 seconds
-            if (numTimesLooped >= 6400 && numTimesLooped < 7680) {
+            if (numTimesLooped >= 7680 && numTimesLooped < 8960) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 3 == 0) {
                     double radius = 1250;
@@ -371,7 +394,7 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Lantern Fall ~20 seconds
-            if (numTimesLooped >= 7680 && numTimesLooped < 8960) {
+            if (numTimesLooped >= 8960 && numTimesLooped < 10240) {
                 // Increase cooldown
                 lanternSpawnCooldown++;
                 if (lanternSpawnCooldown % 1 == 0) {
@@ -390,7 +413,7 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Death
-            if (numTimesLooped >= 8960 && numTimesLooped < 10240) {
+            if (numTimesLooped >= 10240 && numTimesLooped < 11520) {
                 double radius = 1250;
                 double x = 1000 + radius * Math.cos(spiralAngle);
                 double y = 1000 + radius * Math.sin(spiralAngle);
@@ -591,7 +614,7 @@ public class GameView extends JPanel implements KeyListener {
                         double angle = Math.toRadians(i * (360.0 / numShards));
                         double dx = shardSpeed * Math.cos(angle);
                         double dy = shardSpeed * Math.sin(angle);
-                        shards.add(new Projectile(firework.getX(), firework.getY(), dx, dy, 3, 2000, 2000, shardSprites, shardLifetime));
+                        shards.add(new Projectile(firework.getX(), firework.getY(), dx, dy, 3, 2000, 2000, flowerSprites, shardLifetime));
                     }
                 }
                 firework.draw(g2d);
