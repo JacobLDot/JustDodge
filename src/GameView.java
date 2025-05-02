@@ -341,7 +341,7 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 3840 && numTimesLooped < 5120) {
                 // Increase cooldown
                 floatingLanternSpawnCooldown++;
-                if (floatingLanternSpawnCooldown % 5 == 0) {
+                if (floatingLanternSpawnCooldown % 7 == 0) {
                     double randomRow = (int) (Math.random() * 20);
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
@@ -405,10 +405,10 @@ public class GameView extends JPanel implements KeyListener {
                     lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
                     lanterns.add(new Projectile(fallingX2, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
                 }
-                if (lanternSpawnCooldown % 5 == 0) {
+                if (lanternSpawnCooldown % 15 == 0) {
                     int randomRow3 = (int) (Math.random() * 10) + 5;
                     double fallingX3 = randomRow3 * 100;
-                    lanterns.add(new Projectile(fallingX3, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
+                    lanterns.add(new Projectile(fallingX3, 0, 80.0, 80.0, 5, 2000, 2000, flowerSprites));
                 }
             }
 
@@ -606,7 +606,7 @@ public class GameView extends JPanel implements KeyListener {
 
                 // If the firework bounced 3 times, explode it
                 if (firework.shouldExplode()) {
-                    int numShards = 360;
+                    int numShards = 16;
                     double shardSpeed = 5;
                     int shardLifetime = 100;
 
