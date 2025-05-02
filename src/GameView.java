@@ -405,7 +405,7 @@ public class GameView extends JPanel implements KeyListener {
                     lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
                     lanterns.add(new Projectile(fallingX2, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
                 }
-                if (lanternSpawnCooldown % 15 == 0) {
+                if (lanternSpawnCooldown % 10 == 0) {
                     int randomRow3 = (int) (Math.random() * 10) + 5;
                     double fallingX3 = randomRow3 * 100;
                     lanterns.add(new Projectile(fallingX3, 0, 80.0, 80.0, 5, 2000, 2000, flowerSprites));
