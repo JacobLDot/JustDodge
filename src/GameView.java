@@ -218,7 +218,7 @@ public class GameView extends JPanel implements KeyListener {
             Rectangle playerHitbox = player.getHitbox();
             for (Projectile star : stars) {
                 if (star.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(10);
+                    player.takeDamage(15);
                     break;
                 }
             }
