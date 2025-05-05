@@ -76,6 +76,7 @@ public class GameView extends JPanel implements KeyListener {
     }
 
     public void setIsInMenu(Boolean status) {
+        // Creates buttons behind the background
         removeAll();
         isInDifficultyMenu = status;
         isPlayingGame = !status;
