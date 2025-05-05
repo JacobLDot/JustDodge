@@ -226,7 +226,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with flames
             for (Projectile flame : flames) {
                 if (!flame.isHasHitPlayer() && flame.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(5);
+                    player.takeDamage(10);
                     flame.setHasHitPlayer(true);
                 }
             }
@@ -242,7 +242,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with fireworks
             for (Projectile firework : fireworks) {
                 if (!firework.isHasHitPlayer() && firework.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(5);
+                    player.takeDamage(10);
                     firework.setHasHitPlayer(true);
                 }
             }
@@ -308,11 +308,11 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 1280 && numTimesLooped < 2560) {
                 // Increase cooldown
                 fireworkSpawnCooldown++;
-                if (fireworkSpawnCooldown % 50 == 0) {
+                if (fireworkSpawnCooldown % 25 == 0) {
                     int numFireworks = 1;
                     for (int i = 0; i < numFireworks; i++) {
                         double angle = i * (360 / numFireworks);
-                        fireworks.add(new Projectile(1000, 1000, 40, 60, 5.5, 2000, 2000, flowerSprites));
+                        fireworks.add(new Projectile(1000, 1000, 80, 80, 5.5, 2000, 2000, flowerSprites));
                     }
                 }
                 // Increase cooldown
