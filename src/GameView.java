@@ -63,6 +63,14 @@ public class GameView extends JPanel implements KeyListener {
     private JButton hardButton;
     private JButton nightmareButton;
 
+    private Icon startIcon;
+    private Icon selectDifficultyIcon;
+    private Icon easyIcon;
+    private Icon defaultIcon;
+    private Icon hardIcon;
+    private Icon nightmareIcon;
+
+
     public void setIsPlayingGame(Boolean status) {
         isPlayingGame = status;
         isInMenu = !status;
@@ -88,32 +96,36 @@ public class GameView extends JPanel implements KeyListener {
         if (isInDifficultyMenu) {
             remove(startButton);
             remove(selectButton);
-            easyButton = new JButton("Easy");
-            easyButton.setBounds(279, 400, 442, 50);
+            easyButton = new JButton(easyIcon);
+//            easyButton.setBounds(279, 400, 442, 50);
+            easyButton.setBounds(190, 350, 620, 70);
             easyButton.addActionListener(e -> {
                 difficulty = "easy";
                 player.setHp(250);
                 player.setMaxHp(250);
                 returnToMenu();
             });
-            defaultButton = new JButton("Default");
-            defaultButton.setBounds(279, 500, 442, 50);
+            defaultButton = new JButton(defaultIcon);
+//            defaultButton.setBounds(279, 500, 442, 50);
+            defaultButton.setBounds(190, 450, 620, 70);
             defaultButton.addActionListener(e -> {
                 difficulty = "default";
                 player.setHp(100);
                 player.setMaxHp(100);
                 returnToMenu();
             });
-            hardButton = new JButton("Hard");
-            hardButton.setBounds(279, 600, 442, 50);
+            hardButton = new JButton(hardIcon);
+//            hardButton.setBounds(279, 600, 442, 50);
+            hardButton.setBounds(190, 550, 620, 70);
             hardButton.addActionListener(e -> {
                 difficulty = "hard";
                 player.setHp(75);
                 player.setMaxHp(75);
                 returnToMenu();
             });
-            nightmareButton = new JButton("Nightmare");
-            nightmareButton.setBounds(279, 700, 442, 50);
+            nightmareButton = new JButton(nightmareIcon);
+//            nightmareButton.setBounds(279, 700, 442, 50);
+            nightmareButton.setBounds(190, 650, 620, 70);
             nightmareButton.addActionListener(e -> {
                 difficulty = "nightmare";
                 player.setHp(50);
@@ -152,13 +164,14 @@ public class GameView extends JPanel implements KeyListener {
         initializeImages();
 
         setLayout(null);
-        startButton = new JButton("Start");
-        startButton.setBounds(279, 400, 442, 50);
+        startButton = new JButton(startIcon);
+//        startButton.setBounds(279, 400, 442, 50);
+        startButton.setBounds(190, 350, 620, 70);
         startButton.addActionListener(e -> setIsPlayingGame(true));
         add(startButton);
 
-        selectButton = new JButton("Select Difficulty");
-        selectButton.setBounds(279, 500, 442, 50);
+        selectButton = new JButton(selectDifficultyIcon);
+        selectButton.setBounds(190, 450, 620, 70);
         selectButton.addActionListener(e -> setIsInMenu(true));
         add(selectButton);
 
@@ -490,6 +503,12 @@ public class GameView extends JPanel implements KeyListener {
         fireballSprites[3] = new ImageIcon("Resources/Projectiles/fireball_4.png").getImage();
         flowerShurikenSprites[0] = new ImageIcon("Resources/Projectiles/flowershuriken_1.png").getImage();
         flowerShurikenSprites[1] = new ImageIcon("Resources/Projectiles/flowershuriken_2.png").getImage();
+        startIcon = new ImageIcon("Resources/start2.png");
+        selectDifficultyIcon = new ImageIcon("Resources/selectdifficulty2.png");
+        easyIcon = new ImageIcon("Resources/easy2.png");
+        defaultIcon = new ImageIcon("Resources/default2.png");
+        hardIcon = new ImageIcon("Resources/hard2.png");
+        nightmareIcon = new ImageIcon("Resources/nightmare.png");
     }
 
     public void paint(Graphics g) {
@@ -504,28 +523,28 @@ public class GameView extends JPanel implements KeyListener {
         // Cast to Graphics2D for scaling
         Graphics2D g2d = (Graphics2D) g;
 
-        // Fill background black
-        g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
-
         if (isInMenu || isInDifficultyMenu) {
-            g2d.drawImage(menuImage, 0, 0, this);
-            g.drawImage(titleImage, 67, 180, 865, 162, this);
+//            g2d.drawImage(menuImage, 0, 0, this);
+            g.drawImage(titleImage, 67, 120, 865, 162, this);
+        } else {
+            // Fill background black
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
         }
 
-        if (isInMenu) {
-            g2d.drawImage(startImage, 279, 400, 442, 50, this);
-            g2d.drawImage(selectDifficultyImage, 279, 500, 442, 50, this);
-            return;
-        }
-
-        if (isInDifficultyMenu) {
-            g2d.drawImage(easyImage, 279, 400, 442, 50, this);
-            g2d.drawImage(defaultImage, 279, 500, 442, 50, this);
-            g2d.drawImage(hardImage, 279, 600, 442, 50, this);
-            g2d.drawImage(nightmareImage, 279, 700, 442, 50, this);
-            return;
-        }
+//        if (isInMenu) {
+//            g2d.drawImage(startImage, 279, 400, 442, 50, this);
+//            g2d.drawImage(selectDifficultyImage, 279, 500, 442, 50, this);
+//            return;
+//        }
+//
+//        if (isInDifficultyMenu) {
+//            g2d.drawImage(easyImage, 279, 400, 442, 50, this);
+//            g2d.drawImage(defaultImage, 279, 500, 442, 50, this);
+//            g2d.drawImage(hardImage, 279, 600, 442, 50, this);
+//            g2d.drawImage(nightmareImage, 279, 700, 442, 50, this);
+//            return;
+//        }
 
         if (isGameOver) {
             survivalTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -534,8 +553,8 @@ public class GameView extends JPanel implements KeyListener {
             g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
             g2d.drawString("You survived for " + survivalTime + " seconds!", 275, 550);
             g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("DialogInput", Font.BOLD, 15));
-            g2d.drawString("Press R for Menu", 430, 715);
+            g2d.setFont(new Font("DialogInput", Font.BOLD, 40));
+            g2d.drawString("Press R", 425, 725);
             return;
         }
 
