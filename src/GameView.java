@@ -132,14 +132,12 @@ public class GameView extends JPanel implements KeyListener {
                 player.setMaxHp(50);
                 returnToMenu();
             });
-
+            repaint();
+            revalidate();
             add(easyButton);
             add(defaultButton);
             add(hardButton);
             add(nightmareButton);
-
-            revalidate();
-            repaint();
         }
     }
 
@@ -514,6 +512,7 @@ public class GameView extends JPanel implements KeyListener {
     public void paint(Graphics g) {
         super.paint(g);
 
+        // Follow player
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
@@ -525,26 +524,12 @@ public class GameView extends JPanel implements KeyListener {
 
         if (isInMenu || isInDifficultyMenu) {
 //            g2d.drawImage(menuImage, 0, 0, this);
-            g.drawImage(titleImage, 67, 120, 865, 162, this);
+            g2d.drawImage(titleImage, 67, 120, 865, 162, this);
         } else {
             // Fill background black
             g2d.setColor(Color.BLACK);
             g2d.fillRect(0, 0, getWidth(), getHeight());
         }
-
-//        if (isInMenu) {
-//            g2d.drawImage(startImage, 279, 400, 442, 50, this);
-//            g2d.drawImage(selectDifficultyImage, 279, 500, 442, 50, this);
-//            return;
-//        }
-//
-//        if (isInDifficultyMenu) {
-//            g2d.drawImage(easyImage, 279, 400, 442, 50, this);
-//            g2d.drawImage(defaultImage, 279, 500, 442, 50, this);
-//            g2d.drawImage(hardImage, 279, 600, 442, 50, this);
-//            g2d.drawImage(nightmareImage, 279, 700, 442, 50, this);
-//            return;
-//        }
 
         if (isGameOver) {
             survivalTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -553,8 +538,8 @@ public class GameView extends JPanel implements KeyListener {
             g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
             g2d.drawString("You survived for " + survivalTime + " seconds!", 275, 550);
             g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("DialogInput", Font.BOLD, 40));
-            g2d.drawString("Press R", 425, 725);
+            g2d.setFont(new Font("DialogInput", Font.BOLD, 24));
+            g2d.drawString("Press R", 445, 720);
             return;
         }
 
