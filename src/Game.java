@@ -10,6 +10,7 @@ public class Game {
         GameView window = new GameView();
         frame.add(window);
         frame.setVisible(true);
+        frame.setResizable(false);
         window.requestFocusInWindow();
     }
 }

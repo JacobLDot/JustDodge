@@ -19,6 +19,7 @@ public class GameView extends JPanel implements KeyListener {
     private Image defaultImage;
     private Image hardImage;
     private Image nightmareImage;
+    private Image titleImage;
     private static final double ZOOM = 0.60;
     public static final int MAP_WIDTH = 2000;
     public static final int MAP_HEIGHT = 2000;
@@ -35,6 +36,8 @@ public class GameView extends JPanel implements KeyListener {
     private Image[] fireworkSprites = new Image[4];
     private Image[] shardSprites = new Image[4];
     private Image[] flowerSprites = new Image[4];
+    private Image[] fireballSprites = new Image[4];
+    private Image[] flowerShurikenSprites = new Image[2];
     private long startTime;
     private double survivalTime;
     private double spiralAngle = 0;
@@ -296,11 +299,11 @@ public class GameView extends JPanel implements KeyListener {
                     double x1 = 1000 + radius * Math.cos(randomAngle);
                     double y1 = 1000 + radius * Math.sin(randomAngle);
 
-                    double oppositeAngle = randomAngle + Math.PI;
+                    double oppositeAngle = Math.random() * 2 * Math.PI;
                     double x2 = 1000 + radius * Math.cos(oppositeAngle);
                     double y2 = 1000 + radius * Math.sin(oppositeAngle);
-                    flames.add(new Projectile(x1, y1, 80, 80, 1000, 1000,50, 2000, 2000, flowerSprites));
-                    flames.add(new Projectile(x2, y2, 80, 80, 1000,1000,50, 2000, 2000, flowerSprites));
+                    flames.add(new Projectile(x1, y1, 40, 40, 1000, 1000,50, 2000, 2000, fireballSprites));
+                    flames.add(new Projectile(x2, y2, 40, 40, 1000,1000,50, 2000, 2000, fireballSprites));
                 }
             }
 
@@ -312,7 +315,7 @@ public class GameView extends JPanel implements KeyListener {
                     int numFireworks = 1;
                     for (int i = 0; i < numFireworks; i++) {
                         double angle = i * (360 / numFireworks);
-                        fireworks.add(new Projectile(1000, 1000, 80, 80, 5.5, 2000, 2000, flowerSprites));
+                        fireworks.add(new Projectile(1000, 1000, 80, 80, 5.5, 2000, 2000, flowerShurikenSprites));
                     }
                 }
                 // Increase cooldown
@@ -334,7 +337,7 @@ public class GameView extends JPanel implements KeyListener {
                 if (lanternSpawnCooldown % 5 == 0) {
                     int randomRow = (int) (Math.random() * 20);
                     double fallingX = randomRow * 100;
-                    lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, flowerSprites));
+                    lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, lanternSprites));
                 }
             }
 
@@ -347,7 +350,7 @@ public class GameView extends JPanel implements KeyListener {
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
                     int speed = 3 + (int) (Math.random() * 7);
-                    floatingLanterns.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    floatingLanterns.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, lanternSprites));
                 }
             }
 
@@ -447,7 +450,8 @@ public class GameView extends JPanel implements KeyListener {
 
     public void initializeImages() {
         mapImage = new ImageIcon("Resources/map.png").getImage();
-        menuImage = new ImageIcon("Resources/menu.png").getImage();
+        titleImage = new ImageIcon("Resources/title2.png").getImage();
+        menuImage = new ImageIcon("Resources/menu3.png").getImage();
         deathImage = new ImageIcon("Resources/death.png").getImage();
         startImage = new ImageIcon("Resources/start2.png").getImage();
         selectDifficultyImage = new ImageIcon("Resources/selectdifficulty2.png").getImage();
@@ -480,6 +484,12 @@ public class GameView extends JPanel implements KeyListener {
         shardSprites[1] = new ImageIcon("Resources/Projectiles/shard_2.png").getImage();
         shardSprites[2] = new ImageIcon("Resources/Projectiles/shard_3.png").getImage();
         shardSprites[3] = new ImageIcon("Resources/Projectiles/shard_4.png").getImage();
+        fireballSprites[0] = new ImageIcon("Resources/Projectiles/fireball_1.png").getImage();
+        fireballSprites[1] = new ImageIcon("Resources/Projectiles/fireball_2.png").getImage();
+        fireballSprites[2] = new ImageIcon("Resources/Projectiles/fireball_3.png").getImage();
+        fireballSprites[3] = new ImageIcon("Resources/Projectiles/fireball_4.png").getImage();
+        flowerShurikenSprites[0] = new ImageIcon("Resources/Projectiles/flowershuriken_1.png").getImage();
+        flowerShurikenSprites[1] = new ImageIcon("Resources/Projectiles/flowershuriken_2.png").getImage();
     }
 
     public void paint(Graphics g) {
@@ -500,6 +510,7 @@ public class GameView extends JPanel implements KeyListener {
 
         if (isInMenu || isInDifficultyMenu) {
             g2d.drawImage(menuImage, 0, 0, this);
+            g.drawImage(titleImage, 67, 180, 865, 162, this);
         }
 
         if (isInMenu) {
