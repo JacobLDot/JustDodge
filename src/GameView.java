@@ -207,19 +207,19 @@ public class GameView extends JPanel implements KeyListener {
                 regenCounter = 0;
             }
             boolean moving = false;
-            if (keysPressed.contains(KeyEvent.VK_W)) { // Up
+            if (keysPressed.contains(KeyEvent.VK_W) || keysPressed.contains(KeyEvent.VK_UP)) { // Up
                 player.moveDown();
                 moving = true;
             }
-            if (keysPressed.contains(KeyEvent.VK_S)) { // Down
+            if (keysPressed.contains(KeyEvent.VK_S) || keysPressed.contains(KeyEvent.VK_DOWN)) { // Down
                 player.moveUp();
                 moving = true;
             }
-            if (keysPressed.contains(KeyEvent.VK_A)) { // Left
+            if (keysPressed.contains(KeyEvent.VK_A) || keysPressed.contains(KeyEvent.VK_LEFT)) { // Left
                 player.moveLeft();
                 moving = true;
             }
-            if (keysPressed.contains(KeyEvent.VK_D)) { // Right
+            if (keysPressed.contains(KeyEvent.VK_D) || keysPressed.contains(KeyEvent.VK_RIGHT)) { // Right
                 player.moveRight();
                 moving = true;
             }
@@ -509,8 +509,8 @@ public class GameView extends JPanel implements KeyListener {
         nightmareIcon = new ImageIcon("Resources/nightmare.png");
     }
 
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
         // Follow player
         int centerX = getWidth() / 2;
@@ -522,13 +522,13 @@ public class GameView extends JPanel implements KeyListener {
         // Cast to Graphics2D for scaling
         Graphics2D g2d = (Graphics2D) g;
 
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, getWidth(), getHeight());
+
         if (isInMenu || isInDifficultyMenu) {
-//            g2d.drawImage(menuImage, 0, 0, this);
+            g2d.drawImage(menuImage, 0, 0, this);
             g2d.drawImage(titleImage, 67, 120, 865, 162, this);
-        } else {
-            // Fill background black
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
+            return;
         }
 
         if (isGameOver) {
