@@ -537,10 +537,10 @@ public class GameView extends JPanel implements KeyListener {
             survivalTime = (System.currentTimeMillis() - startTime) / 1000;
             g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
 
-            if (survivalTime >= 194) {
+            if (survivalTime >= 195) {
                 g2d.setColor(Color.GREEN);
                 g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
-                g2d.drawString("You won!", 275, 550);
+                g2d.drawString("You won!", 450, 550);
                 g2d.drawImage(crownImage, 225, -25, 550, 550, this);
             } else {
                 g2d.setColor(Color.RED);
