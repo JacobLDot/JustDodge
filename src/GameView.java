@@ -38,6 +38,7 @@ public class GameView extends JPanel implements KeyListener {
     private Image[] flowerSprites = new Image[4];
     private Image[] fireballSprites = new Image[4];
     private Image[] flowerShurikenSprites = new Image[2];
+    private Image crownImage;
     private long startTime;
     private double survivalTime;
     private double spiralAngle = 0;
@@ -507,6 +508,7 @@ public class GameView extends JPanel implements KeyListener {
         defaultIcon = new ImageIcon("Resources/default2.png");
         hardIcon = new ImageIcon("Resources/hard2.png");
         nightmareIcon = new ImageIcon("Resources/nightmare.png");
+        crownImage = new ImageIcon("Resources/king.png").getImage();
     }
 
     public void paintComponent(Graphics g) {
@@ -534,9 +536,17 @@ public class GameView extends JPanel implements KeyListener {
         if (isGameOver) {
             survivalTime = (System.currentTimeMillis() - startTime) / 1000;
             g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
-            g2d.setColor(Color.RED);
-            g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
-            g2d.drawString("You survived for " + survivalTime + " seconds!", 275, 550);
+
+            if (survivalTime >= 194) {
+                g2d.setColor(Color.GREEN);
+                g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
+                g2d.drawString("You won!", 275, 550);
+                g2d.drawImage(crownImage, 225, -25, 550, 550, this);
+            } else {
+                g2d.setColor(Color.RED);
+                g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
+                g2d.drawString("You survived for " + survivalTime + " seconds!", 275, 550);
+            }
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("DialogInput", Font.BOLD, 24));
             g2d.drawString("Press R", 445, 720);
