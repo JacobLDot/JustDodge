@@ -130,8 +130,8 @@ public class GameView extends JPanel implements KeyListener {
             nightmareButton.setBounds(190, 650, 620, 70);
             nightmareButton.addActionListener(e -> {
                 difficulty = "nightmare";
-                player.setHp(50);
-                player.setMaxHp(50);
+                player.setHp(75);
+                player.setMaxHp(75);
                 returnToMenu();
             });
             repaint();
