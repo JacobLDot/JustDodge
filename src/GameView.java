@@ -328,7 +328,7 @@ public class GameView extends JPanel implements KeyListener {
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 5 + (int)(Math.random() * 5);
-                    flowers.add(new Projectile(1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flameSprites));
+                    flowers.add(new Projectile("out", 1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flameSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -388,7 +388,7 @@ public class GameView extends JPanel implements KeyListener {
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 3 + (int)(Math.random() * 5);
-                    flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    flowers.add(new Projectile("in", x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -401,7 +401,7 @@ public class GameView extends JPanel implements KeyListener {
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 5 + (int)(Math.random() * 5);
-                    flowers.add(new Projectile(1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    flowers.add(new Projectile("out", 1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flowerSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -416,8 +416,8 @@ public class GameView extends JPanel implements KeyListener {
                     double x2 = 1000 + radius * Math.cos(spiralAngle2);
                     double y2 = 1000 + radius * Math.sin(spiralAngle2);
                     int speed = 5 + (int)(Math.random() * 5);
-                    flowers.add(new Projectile(1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                    flowers.add(new Projectile(1000, 1000, x2, y2, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    flowers.add(new Projectile("out", 1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flowerSprites));
+                    flowers.add(new Projectile("out", 1000, 1000, x2, y2, 80.0, 80, speed, 2000, 2000, flowerSprites));
                     spiralAngle += 0.5;
                     spiralAngle2 -= 0.5;
                 }
@@ -469,7 +469,7 @@ public class GameView extends JPanel implements KeyListener {
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 5 + (int)(Math.random() * 5);
-                    flowers.add(new Projectile(1000, 1000, x, y, 40.0, 40, speed, 2000, 2000, flameSprites));
+                    flowers.add(new Projectile("out",1000, 1000, x, y, 40.0, 40, speed, 2000, 2000, flameSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -647,9 +647,15 @@ public class GameView extends JPanel implements KeyListener {
                 flower.update();
 
                 // Removes flower if in the middle
-                int tolerance = 5;
-                if (Math.abs(flower.getX() - 1000) < tolerance && Math.abs(flower.getY() - 1000) < tolerance) {
-                    flowerIterator.remove();
+                if (flower.getFlowerDirection().equals("in")) {
+                    int tolerance = 5;
+                    if (Math.abs(flower.getX() - 1000) < tolerance && Math.abs(flower.getY() - 1000) < tolerance) {
+                        flowerIterator.remove();
+                    }
+                } else {
+                    if (flower.getX() >= 2000 || flower.getX() <= 0 || flower.getY() >= 2000 || flower.getY() <= 0) {
+                        flowerIterator.remove();
+                    }
                 }
             }
 

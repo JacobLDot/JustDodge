@@ -37,7 +37,9 @@ public class Projectile {
     private boolean explode = false;
     private int shardAge = 0;
     private int shardLifetime = 30;
+    private String flowerDirection;
 
+    public String getFlowerDirection() { return flowerDirection; }
 
     public boolean isHasHitPlayer() {
         return hasHitPlayer;
@@ -132,7 +134,8 @@ public class Projectile {
     }
 
     // Flowers
-    public Projectile(double x, double y, double targetX, double targetY, double width, int height, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
+    public Projectile(String flowerDirection, double x, double y, double targetX, double targetY, double width, int height, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
+        this.flowerDirection = flowerDirection;
         this.isFlower = true;
         this.x = x;
         this.y = y;
