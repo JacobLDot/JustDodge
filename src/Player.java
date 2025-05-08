@@ -32,6 +32,14 @@ public class Player {
         loadSprites();
     }
 
+    public void setWorldX(double x) {
+        this.worldX = (int)x;
+    }
+
+    public void setWorldY(double y) {
+        this.worldY = (int)y;
+    }
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }

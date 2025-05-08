@@ -57,6 +57,7 @@ public class GameView extends JPanel implements KeyListener {
     private boolean isInMenu = false;
     private boolean isInDifficultyMenu = false;
     private String difficulty = "default";
+    private Boolean wasSpacePressed;
 
     private JButton startButton;
     private JButton selectButton;
@@ -225,11 +226,27 @@ public class GameView extends JPanel implements KeyListener {
                 player.moveRight();
                 moving = true;
             }
-            if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-                player.setSpeed(15);
-            } else {
-                player.setSpeed(7);
+
+            // Ninja Ability
+//            if (keysPressed.contains(KeyEvent.VK_SPACE)) {
+//                player.setSpeed(15);
+//            } else {
+//                player.setSpeed(7);
+//            }
+
+            // Kensei Ability
+            boolean isSpacePressed = keysPressed.contains(KeyEvent.VK_SPACE);
+            if (keysPressed.contains(KeyEvent.VK_SPACE) && !wasSpacePressed) {
+                double mouseX = getMousePosition().getX();
+                double mouseY = getMousePosition().getY();
+                double worldMouseX = (mouseX / ZOOM) + player.getWorldX() - getWidth() / 2.0 / ZOOM;
+                double worldMouseY = (mouseY / ZOOM) + player.getWorldY() - getHeight() / 2.0/ ZOOM;
+                player.setWorldX(Math.max(0, Math.min(worldMouseX, 2000)));
+                player.setWorldY(Math.max(0, Math.min(worldMouseY, 2000)));
+                System.out.println("WORLDX, WORLDY: " + worldMouseX + worldMouseY);
+                System.out.println("PLAYERX, PLAYERY: " + player.getWorldX() + player.getWorldY());
             }
+            wasSpacePressed = isSpacePressed;
 
             if (!moving) player.stopMoving(); // If not moving stop the animation
 
