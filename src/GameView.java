@@ -632,21 +632,21 @@ public class GameView extends JPanel implements KeyListener {
                 flame.draw(g2d);
                 flame.update();
 
-                // Removes lantern if in the middle
+                // Removes flame if in the middle
                 int tolerance = 5;
                 if (Math.abs(flame.getX() - 1000) < tolerance && Math.abs(flame.getY() - 1000) < tolerance) {
                     flameIterator.remove();
                 }
             }
 
-            // Remove the flame once it reaches the center of the map
+            // Remove the flower once it reaches the center of the map
             Iterator<Projectile> flowerIterator = flowers.iterator();
             while (flowerIterator.hasNext()) { // Repeats until no more lanterns
                 Projectile flower = flowerIterator.next();
                 flower.draw(g2d);
                 flower.update();
 
-                // Removes lantern if in the middle
+                // Removes flower if in the middle
                 int tolerance = 5;
                 if (Math.abs(flower.getX() - 1000) < tolerance && Math.abs(flower.getY() - 1000) < tolerance) {
                     flowerIterator.remove();
