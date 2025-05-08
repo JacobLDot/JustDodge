@@ -291,12 +291,14 @@ public class GameView extends JPanel implements KeyListener {
             if (playerClass.equals("kensei")){
                 boolean isSpacePressed = keysPressed.contains(KeyEvent.VK_SPACE);
                 if (keysPressed.contains(KeyEvent.VK_SPACE) && !wasSpacePressed) {
-                    double mouseX = getMousePosition().getX();
-                    double mouseY = getMousePosition().getY();
-                    double worldMouseX = (mouseX / ZOOM) + player.getWorldX() - getWidth() / 2.0 / ZOOM;
-                    double worldMouseY = (mouseY / ZOOM) + player.getWorldY() - getHeight() / 2.0 / ZOOM;
-                    player.setWorldX(Math.max(0, Math.min(worldMouseX, 2000)));
-                    player.setWorldY(Math.max(0, Math.min(worldMouseY, 2000)));
+                    if (getMousePosition() != null) {
+                        double mouseX = getMousePosition().getX();
+                        double mouseY = getMousePosition().getY();
+                        double worldMouseX = (mouseX / ZOOM) + player.getWorldX() - getWidth() / 2.0 / ZOOM;
+                        double worldMouseY = (mouseY / ZOOM) + player.getWorldY() - getHeight() / 2.0 / ZOOM;
+                        player.setWorldX(Math.max(0, Math.min(worldMouseX, 2000)));
+                        player.setWorldY(Math.max(0, Math.min(worldMouseY, 2000)));
+                    }
                 }
                 wasSpacePressed = isSpacePressed;
             }
