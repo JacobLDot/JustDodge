@@ -20,6 +20,7 @@ public class GameView extends JPanel implements KeyListener {
     private Image hardImage;
     private Image nightmareImage;
     private Image titleImage;
+    private Image borderImage;
     private static final double ZOOM = 0.60;
     public static final int MAP_WIDTH = 2000;
     public static final int MAP_HEIGHT = 2000;
@@ -31,7 +32,7 @@ public class GameView extends JPanel implements KeyListener {
     private ArrayList<Projectile> floatingLanterns = new ArrayList<>();
     private ArrayList<Projectile> flowers = new ArrayList<>();
     private Image[] starSprites = new Image[4];
-    private Image[] flameSprites = new Image[4];
+    private Image[] flameSprites = new Image[8];
     private Image[] lanternSprites = new Image[4];
     private Image[] fireworkSprites = new Image[4];
     private Image[] shardSprites = new Image[4];
@@ -241,7 +242,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with flames
             for (Projectile flame : flames) {
                 if (!flame.isHasHitPlayer() && flame.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(10);
+                    player.takeDamage(5);
                     flame.setHasHitPlayer(true);
                 }
             }
@@ -273,7 +274,7 @@ public class GameView extends JPanel implements KeyListener {
             // Detects collision with floating lanterns
             for (Projectile floatingLantern : floatingLanterns) {
                 if (!floatingLantern.isHasHitPlayer() && floatingLantern.getHitbox().intersects(playerHitbox)) {
-                    player.takeDamage(20);
+                    player.takeDamage(15);
                     floatingLantern.setHasHitPlayer(true);
                 }
             }
@@ -296,7 +297,7 @@ public class GameView extends JPanel implements KeyListener {
                     // Parametric equation of a circle to place points on the circle
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 80, 80, 1000, 1000,50, 2000, 2000, flowerSprites));
+                    flames.add(new Projectile(x, y, 40, 60, 1000, 1000,50, 2000, 2000, flameSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -319,6 +320,19 @@ public class GameView extends JPanel implements KeyListener {
                 }
             }
 
+            // Flame Spiral Phase 3
+            if (difficulty.equals("nightmare")) {
+                flowerSpawnCooldown++;
+                if (flowerSpawnCooldown % 10 == 0) {
+                    double radius = 1250;
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    int speed = 5 + (int)(Math.random() * 5);
+                    flowers.add(new Projectile(1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flameSprites));
+                    spiralAngle += 0.5;
+                }
+            }
+
             // Rebound Phase ~ 20 seconds
             if (numTimesLooped >= 1280 && numTimesLooped < 2560) {
                 // Increase cooldown
@@ -337,7 +351,7 @@ public class GameView extends JPanel implements KeyListener {
                     // Parametric equation of a circle to place points on the circle
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 80, 80, 1000, 1000,50, 2000, 2000, flowerSprites));
+                    flames.add(new Projectile(x, y, 80, 80, 1000, 1000,50, 2000, 2000, flameSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -477,9 +491,13 @@ public class GameView extends JPanel implements KeyListener {
         starSprites[2] = new ImageIcon("Resources/Projectiles/red_star.png").getImage();
         starSprites[3] = new ImageIcon("Resources/Projectiles/yellow_star.png").getImage();
         flameSprites[0] = new ImageIcon("Resources/Projectiles/blue_flame.png").getImage();
-        flameSprites[1] = new ImageIcon("Resources/Projectiles/green_flame.png").getImage();
-        flameSprites[2] = new ImageIcon("Resources/Projectiles/red_flame.png").getImage();
-        flameSprites[3] = new ImageIcon("Resources/Projectiles/yellow_flame.png").getImage();
+        flameSprites[1] = new ImageIcon("Resources/Projectiles/BF2.png").getImage();
+        flameSprites[2] = new ImageIcon("Resources/Projectiles/green_flame.png").getImage();
+        flameSprites[3] = new ImageIcon("Resources/Projectiles/GF2.png").getImage();
+        flameSprites[4] = new ImageIcon("Resources/Projectiles/red_flame.png").getImage();
+        flameSprites[5] = new ImageIcon("Resources/Projectiles/RF2.png").getImage();
+        flameSprites[6] = new ImageIcon("Resources/Projectiles/yellow_flame.png").getImage();
+        flameSprites[7] = new ImageIcon("Resources/Projectiles/YF2.png").getImage();
         lanternSprites[0] = new ImageIcon("Resources/Projectiles/lantern1.png").getImage();
         lanternSprites[1] = new ImageIcon("Resources/Projectiles/lantern2.png").getImage();
         lanternSprites[2] = new ImageIcon("Resources/Projectiles/lantern3.png").getImage();
@@ -509,6 +527,7 @@ public class GameView extends JPanel implements KeyListener {
         hardIcon = new ImageIcon("Resources/hard2.png");
         nightmareIcon = new ImageIcon("Resources/nightmare.png");
         crownImage = new ImageIcon("Resources/king.png").getImage();
+        borderImage = new ImageIcon("Resources/border.png").getImage();
     }
 
     public void paintComponent(Graphics g) {
@@ -529,6 +548,7 @@ public class GameView extends JPanel implements KeyListener {
 
         if (isInMenu || isInDifficultyMenu) {
             g2d.drawImage(menuImage, 0, 0, this);
+            g2d.drawImage(borderImage, 0, 0, 1000, 777, this);
             g2d.drawImage(titleImage, 67, 120, 865, 162, this);
             return;
         }
