@@ -11,7 +11,7 @@ public class Player {
 
     // Player stats
     private final int size = 80;
-    private final int speed = 7;
+    private int speed = 7;
     private int hp;
     private int maxHp;
     private String difficulty;
@@ -23,12 +23,17 @@ public class Player {
     private String direction = "right"; // Sets default direction
     private Image[][] walkFrames;
     private Image[] idleFrames;
+    private Image speedy;
 
     // Player constructor
     public Player(int x, int y) {
         this.worldX = x;
         this.worldY = y;
         loadSprites();
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
     public void setHp(int hp) {
@@ -46,6 +51,8 @@ public class Player {
 
         // 4 directions
         idleFrames = new Image[4];
+
+        speedy = new ImageIcon("Resources/speedy.png").getImage();
 
         walkFrames[0][0] = new ImageIcon("Resources/Sprites/down_1.png").getImage();
         walkFrames[0][1] = new ImageIcon("Resources/Sprites/down_2.png").getImage();
@@ -192,6 +199,10 @@ public class Player {
         Color healthColor = new Color(1.0f - hpPercent, hpPercent, 0.0f);
         g.setColor(healthColor);
         g.fillRect(barX, barY, (int)(barWidth * hpPercent), barHeight);
+
+        if (speed == 15) {
+            g.drawImage(speedy, worldX + 16, worldY - 80, 64, 64, null);
+        }
 
         // Draws the image centered at (x, y)
         int drawX = worldX - size / 2;
