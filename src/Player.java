@@ -160,6 +160,7 @@ public class Player {
     // Resets to start when game is reset
     public void reset() {
         this.hp = 100;
+        this.speed = 7;
         this.maxHp = 100;
         this.worldX = MAP_WIDTH / 2;
         this.worldY = (int)(MAP_HEIGHT * 0.7805);

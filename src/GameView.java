@@ -56,7 +56,9 @@ public class GameView extends JPanel implements KeyListener {
     private boolean isPlayingGame = false;
     private boolean isInMenu = false;
     private boolean isInDifficultyMenu = false;
+    private boolean isSelectingClass = false;
     private String difficulty = "default";
+    private String playerClass = "";
     private Boolean wasSpacePressed;
 
     private JButton startButton;
@@ -65,6 +67,9 @@ public class GameView extends JPanel implements KeyListener {
     private JButton defaultButton;
     private JButton hardButton;
     private JButton nightmareButton;
+    private JButton selectPlayerButton;
+    private JButton ninjaButton;
+    private JButton kenseiButton;
 
     private Icon startIcon;
     private Icon selectDifficultyIcon;
@@ -72,16 +77,19 @@ public class GameView extends JPanel implements KeyListener {
     private Icon defaultIcon;
     private Icon hardIcon;
     private Icon nightmareIcon;
+    private Icon selectClassIcon;
+    private Icon ninjaIcon;
+    private Icon kenseiIcon;
 
 
     public void setIsPlayingGame(Boolean status) {
         isPlayingGame = status;
         isInMenu = !status;
         isInDifficultyMenu = !status;
+        isSelectingClass = !status;
 
         if (isPlayingGame) {
-            remove(startButton);
-            remove(selectButton);
+            removeAll();
             revalidate();
             repaint();
             requestFocusInWindow();
@@ -89,16 +97,53 @@ public class GameView extends JPanel implements KeyListener {
         }
     }
 
+    public void setIsSelectingClass(Boolean status) {
+        removeAll();
+        isPlayingGame = !status;
+        isInMenu = !status;
+        isInDifficultyMenu = !status;
+        isSelectingClass = status;
+
+        if (isSelectingClass) {
+            defaultButton = new JButton(defaultIcon);
+            defaultButton.setBounds(190, 350, 620, 70);
+            defaultButton.addActionListener(e -> {
+                playerClass = "default";
+                returnToMenu();
+            });
+            ninjaButton = new JButton(ninjaIcon);
+            ninjaButton.setBounds(190, 450, 620, 70);
+            ninjaButton.addActionListener(e -> {
+                playerClass = "ninja";
+                returnToMenu();
+            });
+
+            kenseiButton = new JButton(kenseiIcon);
+            kenseiButton.setBounds(190, 550, 620, 70);
+            kenseiButton.addActionListener(e -> {
+                playerClass = "kensei";
+                returnToMenu();
+            });
+            add(defaultButton);
+            add(ninjaButton);
+            add(kenseiButton);
+            repaint();
+            revalidate();
+        }
+    }
+
     public void setIsInMenu(Boolean status) {
-        // Creates buttons behind the background
+        // Creates buttons
         removeAll();
         isInDifficultyMenu = status;
         isPlayingGame = !status;
         isInMenu = !status;
+        isSelectingClass = !status;
 
         if (isInDifficultyMenu) {
             remove(startButton);
             remove(selectButton);
+            remove(selectPlayerButton);
             easyButton = new JButton(easyIcon);
 //            easyButton.setBounds(279, 400, 442, 50);
             easyButton.setBounds(190, 350, 620, 70);
@@ -135,12 +180,12 @@ public class GameView extends JPanel implements KeyListener {
                 player.setMaxHp(75);
                 returnToMenu();
             });
-            repaint();
-            revalidate();
             add(easyButton);
             add(defaultButton);
             add(hardButton);
             add(nightmareButton);
+            repaint();
+            revalidate();
         }
     }
 
@@ -148,6 +193,7 @@ public class GameView extends JPanel implements KeyListener {
         removeAll();
         add(startButton);
         add(selectButton);
+        add(selectPlayerButton);
         setIsPlayingGame(false);
         revalidate();
         repaint();
@@ -175,6 +221,11 @@ public class GameView extends JPanel implements KeyListener {
         selectButton.setBounds(190, 450, 620, 70);
         selectButton.addActionListener(e -> setIsInMenu(true));
         add(selectButton);
+
+        selectPlayerButton = new JButton(selectClassIcon);
+        selectPlayerButton.setBounds(190, 550, 620, 70);
+        selectPlayerButton.addActionListener(e -> setIsSelectingClass(true));
+        add(selectPlayerButton);
 
         setIsPlayingGame(false);
     }
@@ -228,25 +279,27 @@ public class GameView extends JPanel implements KeyListener {
             }
 
             // Ninja Ability
-//            if (keysPressed.contains(KeyEvent.VK_SPACE)) {
-//                player.setSpeed(15);
-//            } else {
-//                player.setSpeed(7);
-//            }
+            if (playerClass.equals("ninja")) {
+                if (keysPressed.contains(KeyEvent.VK_SPACE)) {
+                    player.setSpeed(15);
+                } else {
+                    player.setSpeed(7);
+                }
+            }
 
             // Kensei Ability
-            boolean isSpacePressed = keysPressed.contains(KeyEvent.VK_SPACE);
-            if (keysPressed.contains(KeyEvent.VK_SPACE) && !wasSpacePressed) {
-                double mouseX = getMousePosition().getX();
-                double mouseY = getMousePosition().getY();
-                double worldMouseX = (mouseX / ZOOM) + player.getWorldX() - getWidth() / 2.0 / ZOOM;
-                double worldMouseY = (mouseY / ZOOM) + player.getWorldY() - getHeight() / 2.0/ ZOOM;
-                player.setWorldX(Math.max(0, Math.min(worldMouseX, 2000)));
-                player.setWorldY(Math.max(0, Math.min(worldMouseY, 2000)));
-                System.out.println("WORLDX, WORLDY: " + worldMouseX + worldMouseY);
-                System.out.println("PLAYERX, PLAYERY: " + player.getWorldX() + player.getWorldY());
+            if (playerClass.equals("kensei")){
+                boolean isSpacePressed = keysPressed.contains(KeyEvent.VK_SPACE);
+                if (keysPressed.contains(KeyEvent.VK_SPACE) && !wasSpacePressed) {
+                    double mouseX = getMousePosition().getX();
+                    double mouseY = getMousePosition().getY();
+                    double worldMouseX = (mouseX / ZOOM) + player.getWorldX() - getWidth() / 2.0 / ZOOM;
+                    double worldMouseY = (mouseY / ZOOM) + player.getWorldY() - getHeight() / 2.0 / ZOOM;
+                    player.setWorldX(Math.max(0, Math.min(worldMouseX, 2000)));
+                    player.setWorldY(Math.max(0, Math.min(worldMouseY, 2000)));
+                }
+                wasSpacePressed = isSpacePressed;
             }
-            wasSpacePressed = isSpacePressed;
 
             if (!moving) player.stopMoving(); // If not moving stop the animation
 
@@ -569,6 +622,9 @@ public class GameView extends JPanel implements KeyListener {
         nightmareIcon = new ImageIcon("Resources/nightmare.png");
         crownImage = new ImageIcon("Resources/king.png").getImage();
         borderImage = new ImageIcon("Resources/border.png").getImage();
+        selectClassIcon = new ImageIcon("Resources/selectclass.png");
+        ninjaIcon = new ImageIcon("Resources/ninja.png");
+        kenseiIcon = new ImageIcon("Resources/kensei.png");
     }
 
     public void paintComponent(Graphics g) {
@@ -587,7 +643,7 @@ public class GameView extends JPanel implements KeyListener {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        if (isInMenu || isInDifficultyMenu) {
+        if (isInMenu || isInDifficultyMenu || isSelectingClass) {
             g2d.drawImage(menuImage, 0, 0, this);
             g2d.drawImage(borderImage, 0, 0, 1000, 777, this);
             g2d.drawImage(titleImage, 67, 120, 865, 162, this);
@@ -746,6 +802,7 @@ public class GameView extends JPanel implements KeyListener {
     public void restartGame() {
         player.reset();
         difficulty = "default";
+        playerClass = "default";
         flames.clear();
         stars.clear();
         lanterns.clear();
