@@ -363,7 +363,7 @@ public class GameView extends JPanel implements KeyListener {
                 if (lanternSpawnCooldown % 5 == 0) {
                     int randomRow = (int) (Math.random() * 20);
                     double fallingX = randomRow * 100;
-                    lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, lanternSprites));
+                    lanterns.add(new Projectile(fallingX, 0, 40.0, 64.0, 10, 2000, 2000, lanternSprites));
                 }
             }
 
@@ -376,7 +376,7 @@ public class GameView extends JPanel implements KeyListener {
                     double spawnX = randomRow * 100;
                     double spawnY = 2000 + 10;
                     int speed = 3 + (int) (Math.random() * 7);
-                    floatingLanterns.add(new Projectile(spawnX, spawnY, 80.0, 80, speed, 2000, 2000, lanternSprites));
+                    floatingLanterns.add(new Projectile(spawnX, spawnY, 40.0, 64, speed, 2000, 2000, lanternSprites));
                 }
             }
 
@@ -432,35 +432,69 @@ public class GameView extends JPanel implements KeyListener {
                     int randomRow2 = (int) (Math.random() * 5) + 15;
                     double fallingX = randomRow * 100;
                     double fallingX2 = randomRow2 * 100;
-                    lanterns.add(new Projectile(fallingX, 0, 80.0, 80.0, 10, 2000, 2000, flameSprites));
-                    lanterns.add(new Projectile(fallingX2, 0, 80.0, 80.0, 10, 2000, 2000, flameSprites));
+                    lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 10, 2000, 2000, flameSprites));
+                    lanterns.add(new Projectile(fallingX2, 0, 40.0, 60.0, 10, 2000, 2000, flameSprites));
                 }
                 if (lanternSpawnCooldown % 10 == 0) {
                     int randomRow3 = (int) (Math.random() * 10) + 5;
                     double fallingX3 = randomRow3 * 100;
-                    lanterns.add(new Projectile(fallingX3, 0, 80.0, 80.0, 5, 2000, 2000, lanternSprites));
+                    lanterns.add(new Projectile(fallingX3, 0, 40.0, 64.0, 5, 2000, 2000, lanternSprites));
                 }
             }
 
-            // Death
+            // Lantern Fall Phase 2 ~20 seconds
             if (numTimesLooped >= 10240 && numTimesLooped < 11520) {
-                double radius = 1250;
-                double x = 1000 + radius * Math.cos(spiralAngle);
-                double y = 1000 + radius * Math.sin(spiralAngle);
-                double x2 = 1000 + radius * Math.cos(spiralAngle2);
-                double y2 = 1000 + radius * Math.sin(spiralAngle2);
-                double x3 = 1000 + radius * Math.cos(spiralAngle);
-                double y3 = 1000 + radius * Math.sin(spiralAngle);
-                double x4 = 1000 + radius * Math.cos(spiralAngle2);
-                double y4 = 1000 + radius * Math.sin(spiralAngle2);
-                int speed = 7 + (int)(Math.random() * 5);
-                flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                flowers.add(new Projectile(x2, y2, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                flowers.add(new Projectile(1000, 1000, x3, y3, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                flowers.add(new Projectile(1000, 1000, x4, y4, 80.0, 80, speed, 2000, 2000, flowerSprites));
-                spiralAngle += 0.5;
-                spiralAngle2 -= 0.5;
+                // Increase cooldown
+                lanternSpawnCooldown++;
+                if (lanternSpawnCooldown % 1 == 0) {
+                    int randomRow = (int) (Math.random() * 5);
+                    int randomRow2 = (int) (Math.random() * 5) + 15;
+                    double fallingX = randomRow * 100;
+                    double fallingX2 = randomRow2 * 100;
+                    lanterns.add(new Projectile(fallingX, 0, 40.0, 60.0, 10, 2000, 2000, flameSprites));
+                    lanterns.add(new Projectile(fallingX2, 0, 40.0, 60.0, 10, 2000, 2000, flameSprites));
+                }
+                if (lanternSpawnCooldown % 7 == 0) {
+                    int randomRow3 = (int) (Math.random() * 10) + 5;
+                    double fallingX3 = randomRow3 * 100;
+                    lanterns.add(new Projectile(fallingX3, 0, 40.0, 64.0, 5, 2000, 2000, lanternSprites));
+                }
             }
+
+            // Finale
+            if (numTimesLooped >= 11520 && numTimesLooped < 12800) {
+                flowerSpawnCooldown++;
+                if (flowerSpawnCooldown % 1 == 0) {
+                    double radius = 1250;
+                    double x = 1000 + radius * Math.cos(spiralAngle);
+                    double y = 1000 + radius * Math.sin(spiralAngle);
+                    int speed = 5 + (int)(Math.random() * 5);
+                    flowers.add(new Projectile(1000, 1000, x, y, 40.0, 40, speed, 2000, 2000, flameSprites));
+                    spiralAngle += 0.5;
+                }
+            }
+            if (numTimesLooped >= 13000) {
+                player.takeDamage(1000);
+            }
+//            // Death
+//            if (numTimesLooped >= 10240 && numTimesLooped < 11520) {
+//                double radius = 1250;
+//                double x = 1000 + radius * Math.cos(spiralAngle);
+//                double y = 1000 + radius * Math.sin(spiralAngle);
+//                double x2 = 1000 + radius * Math.cos(spiralAngle2);
+//                double y2 = 1000 + radius * Math.sin(spiralAngle2);
+//                double x3 = 1000 + radius * Math.cos(spiralAngle);
+//                double y3 = 1000 + radius * Math.sin(spiralAngle);
+//                double x4 = 1000 + radius * Math.cos(spiralAngle2);
+//                double y4 = 1000 + radius * Math.sin(spiralAngle2);
+//                int speed = 7 + (int)(Math.random() * 5);
+//                flowers.add(new Projectile(x, y, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                flowers.add(new Projectile(x2, y2, 1000, 1000, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                flowers.add(new Projectile(1000, 1000, x3, y3, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                flowers.add(new Projectile(1000, 1000, x4, y4, 80.0, 80, speed, 2000, 2000, flowerSprites));
+//                spiralAngle += 0.5;
+//                spiralAngle2 -= 0.5;
+//            }
 
             // Checks if player is dead
             if (player.getHp() <= 0) {
@@ -557,7 +591,7 @@ public class GameView extends JPanel implements KeyListener {
             survivalTime = (System.currentTimeMillis() - startTime) / 1000;
             g2d.drawImage(deathImage, 0, 0, getWidth(), getHeight(), null);
 
-            if (survivalTime >= 195) {
+            if (numTimesLooped >= 13000) {
                 g2d.setColor(Color.GREEN);
                 g2d.setFont(new Font("Monospaced", Font.BOLD, 24));
                 g2d.drawString("You won!", 450, 550);

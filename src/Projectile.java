@@ -276,7 +276,7 @@ public class Projectile {
                 y += dy/dist * speed;
             }
             frameFlowerCounter++;
-            if (frameFlowerCounter % 10 == 0) {
+            if (frameFlowerCounter % 9 == 0) {
                 frameFlower = (frameFlowerCounter + 1) % flowerSprite.length;
             }
         } else {
