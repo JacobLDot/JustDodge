@@ -324,11 +324,11 @@ public class GameView extends JPanel implements KeyListener {
             if (difficulty.equals("nightmare")) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 10 == 0) {
-                    double radius = 1250;
+                    double radius = 1500;
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 5 + (int)(Math.random() * 5);
-                    flowers.add(new Projectile("out", 1000, 1000, x, y, 80.0, 80, speed, 2000, 2000, flameSprites));
+                    flowers.add(new Projectile("out", 1000, 1000, x, y, 40.0, 60, speed, 2000, 2000, flameSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -351,7 +351,7 @@ public class GameView extends JPanel implements KeyListener {
                     // Parametric equation of a circle to place points on the circle
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
-                    flames.add(new Projectile(x, y, 80, 80, 1000, 1000,50, 2000, 2000, flameSprites));
+                    flames.add(new Projectile(x, y, 40, 60, 1000, 1000,50, 2000, 2000, flameSprites));
                     spiralAngle += 0.5;
                 }
             }
@@ -384,7 +384,7 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 5120 && numTimesLooped < 6400) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 5 == 0) {
-                    double radius = 1250;
+                    double radius = 1500;
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 3 + (int)(Math.random() * 5);
@@ -397,7 +397,7 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 6400 && numTimesLooped < 7680) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 5 == 0) {
-                    double radius = 1250;
+                    double radius = 1500;
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 5 + (int)(Math.random() * 5);
@@ -410,7 +410,7 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 7680 && numTimesLooped < 8960) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 3 == 0) {
-                    double radius = 1250;
+                    double radius = 1500;
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     double x2 = 1000 + radius * Math.cos(spiralAngle2);
@@ -465,7 +465,7 @@ public class GameView extends JPanel implements KeyListener {
             if (numTimesLooped >= 11520 && numTimesLooped < 12800) {
                 flowerSpawnCooldown++;
                 if (flowerSpawnCooldown % 1 == 0) {
-                    double radius = 1250;
+                    double radius = 1500;
                     double x = 1000 + radius * Math.cos(spiralAngle);
                     double y = 1000 + radius * Math.sin(spiralAngle);
                     int speed = 5 + (int)(Math.random() * 5);
