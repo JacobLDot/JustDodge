@@ -6,40 +6,19 @@ public class Projectile {
     private int mapWidth, mapHeight;
     private Image sprite;
     private double x, y;
-    private double dx, dy;
     private int width, height;
     private Image[] flameSprite;
     private Image[] lanternSprite;
-    private Image[] fireworkSprite;
-    private Image[] shardSprite;
-    private Image[] flowerSprite;
     private double targetX, targetY;
     private int frameFlame = 0;
     private int frameFlameCounter = 0;
     private int frameLantern = 0;
     private int frameLanternCounter = 0;
-    private int frameFirework = 0;
-    private int frameFireworkCounter = 0;
-    private int frameShard = 0;
-    private int frameShardCounter = 0;
-    private int framefloatingLantern = 0;
-    private int frameFloatingLanternCounter = 0;
-    private int frameFlower = 0;
-    private int frameFlowerCounter = 0;
     private int bounceCount = 0;
     private boolean isRotatingFlame = false;
     private boolean isFallingLantern = false;
-    private boolean isReboundingFirework = false;
-    private boolean isExpandingShard = false;
-    private boolean isFloatingLantern = false;
-    private boolean isFlower = false;
     public boolean hasHitPlayer = false;
     private boolean explode = false;
-    private int shardAge = 0;
-    private int shardLifetime = 30;
-    private String flowerDirection;
-
-    public String getFlowerDirection() { return flowerDirection; }
 
     public boolean isHasHitPlayer() {
         return hasHitPlayer;
@@ -99,96 +78,12 @@ public class Projectile {
         this.targetY = mapHeight;
     }
 
-    // Rebounding firework
-    public Projectile(double x, double y, int width, int height, double speed, int mapWidth, int mapHeight, Image[] fireworkSprite) {
-        this.isReboundingFirework = true;
-        this.bounceCount = 0;
-        this.explode = false;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.speed = (int)speed;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.fireworkSprite = fireworkSprite;
-        double angle = Math.random() * 360;
-        this.dx = Math.cos(Math.toRadians(angle)) * speed; // Gives horizontal x direction
-        this.dy = Math.sin(Math.toRadians(angle)) * speed; // Gives vertical y direction
-    }
-
-    // Floating Lanterns
-    public Projectile(double x, double y, double width, int height, int speed, int mapWidth, int mapHeight, Image[] floatingLanternSprite) {
-        this.isFloatingLantern = true;
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.lanternSprite = floatingLanternSprite;
-        this.targetY = -10;
-        this.width = (int)width;
-        this.height = height;
-        this.dx = Math.random() * 2 - 1;
-        this.dy = -speed;
-    }
-
-    // Flowers
-    public Projectile(String flowerDirection, double x, double y, double targetX, double targetY, double width, int height, int speed, int mapWidth, int mapHeight, Image[] flowerSprite) {
-        this.flowerDirection = flowerDirection;
-        this.isFlower = true;
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.flowerSprite = flowerSprite;
-        this.targetX = targetX;
-        this.targetY = targetY;
-        this.width = (int)width;
-        this.height = height;
-        this.dx = Math.random() * 2 - 1;
-        this.dy = -speed;
-    }
-
-    public boolean isExpiredShard() {
-        return shardAge > shardLifetime;
-    }
-
-    // For exploding fireworks into shards
-    public Projectile(double x, double y, double dx, double dy, int speed, int mapWidth, int mapHeight, Image[] shardSprites, int shardLifetime) {
-        this.isExpandingShard = true;
-        this.x = x;
-        this.y = y;
-        this.dx = dx;
-        this.dy = dy;
-        this.speed = speed;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.shardSprite = shardSprites;
-        this.width = 10;
-        this.height = 10;
-        this.shardLifetime = shardLifetime;
-    }
-
     public void draw(Graphics g) {
         if (isRotatingFlame) { // Draw flame
             Image currentSprite = flameSprite[frameFlame];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - width / 2, null);
         } else if (isFallingLantern) {
             Image currentSprite = lanternSprite[frameLantern];
-            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        } else if (isReboundingFirework) {
-            Image currentSprite = fireworkSprite[frameFirework];
-            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        } else if (isExpandingShard) {
-            Image currentSprite = shardSprite[frameShard];
-            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        } else if (isFloatingLantern) {
-            Image currentSprite = lanternSprite[framefloatingLantern];
-            g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
-        } else if (isFlower) {
-            Image currentSprite = flowerSprite[frameFlower];
             g.drawImage(currentSprite, (int)x - width / 2, (int)y - height / 2, null);
         } else { // Draw border of stars
                 int drawX = 0;
@@ -235,53 +130,6 @@ public class Projectile {
             if (frameLanternCounter % 10 == 0) {
                 frameLantern = (frameLantern + 1) % lanternSprite.length;
             }
-        } else if (isReboundingFirework) {
-            x += dx;
-            y += dy;
-            if (x <= 0 || x >= mapWidth) {
-                dx = -dx;
-                bounceCount++;
-            }
-            if (y <= 0 || y > mapHeight) {
-                dy = -dy;
-                bounceCount++;
-            }
-
-            if (bounceCount >= 3) {
-                explode = true;
-            }
-            frameFireworkCounter++;
-            if (frameFireworkCounter % 10 == 0) {
-                frameFirework = (frameFirework + 1) % fireworkSprite.length;
-            }
-        } else if (isExpandingShard) {
-            x += dx;
-            y += dy;
-            shardAge++;
-            frameShardCounter++;
-            if (frameShardCounter % 10 == 0) {
-                frameShard = (frameShard + 1) % shardSprite.length;
-            }
-        } else if (isFloatingLantern) {
-            x += dx;
-            y += dy;
-
-            frameFloatingLanternCounter++;
-            if (frameFloatingLanternCounter % 10 == 0) {
-                framefloatingLantern = (framefloatingLantern + 1) % lanternSprite.length;
-            }
-        } else if (isFlower) {
-            double dx = targetX - x;
-            double dy = targetY - y;
-            double dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist > 1) {
-                x += dx/dist * speed;
-                y += dy/dist * speed;
-            }
-            frameFlowerCounter++;
-            if (frameFlowerCounter % 9 == 0) {
-                frameFlower = (frameFlowerCounter + 1) % flowerSprite.length;
-            }
         } else {
             distance += speed;
             double perimeter = 2 * mapWidth + 2 * mapHeight;
@@ -300,14 +148,6 @@ public class Projectile {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else if (isFallingLantern) {
             return new Rectangle((int)x - width / 2, (int)y - height / 2, (int)width, (int)height);
-        } else if (isReboundingFirework) {
-            return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
-        } else if (isExpandingShard) {
-            return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
-        } else if (isFloatingLantern) {
-            return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
-        } else if (isFlower) {
-            return new Rectangle((int)x - width / 2, (int)y - height / 2, width, height);
         } else {
             int x = 0;
             int y = 0;
